@@ -55,29 +55,29 @@ void loop()
     isLit = (isLit + 1) % 2;                    // Flips isLit from 0 --> 1 or 1 --> 0
     if (isLit == 0)                             // If turning the light off, then
     {
-      index++;                                  // Increment the 
-      setColor(COLOR_NONE);
+      index++;                                  // So the next time the light turns on its the next color in the sequence
+      setColor(COLOR_NONE);                     // Turn off the light
     }
     else
     {
-      setColor(colorSequence[index]);
+      setColor(colorSequence[index]);           // Turn the light on and to the current color in the sequence
     }
   }
 }
 
-long getDelay()
+long getDelay()                                 // A method to return how long the light should stay at the current state
 {
-  if (isLit == 0)
+  if (isLit == 0)                               // If it's not lit, return the preset duration of how long it should be unlit
     return DURATION_DARK;
   else
     return DURATION_LIGHT;
 }
 
-void setColor(byte color)
+void setColor(byte color)                      // A method to set the color of the light to the specified color code
 {
-  if(color == COLOR_NONE)
+  if(color == COLOR_NONE)                      // No color is red off, green off, and blue off (AKA unlit)
     tripleSet(0,0,0);
-  else if (color == COLOR_RED)
+  else if (color == COLOR_RED)                 // To make red, only the red LED should be on, and everything else off
     tripleSet(1,0,0);
   else if (color == COLOR_GREEN)
     tripleSet(0,1,0);
@@ -93,9 +93,9 @@ void setColor(byte color)
     tripleSet(1,1,1);
 }
 
-void tripleSet(byte red, byte green, byte blue)
+void tripleSet(byte red, byte green, byte blue) // This method sets the state of each of the LEDs all at once
 {
-  if(red > 0)
+  if(red > 0)                                   // Turn on the red LED if the "red" argument is 1
     digitalWrite(LED_PIN_RED, HIGH);
   else
     digitalWrite(LED_PIN_RED, LOW);
