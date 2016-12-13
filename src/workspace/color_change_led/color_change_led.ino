@@ -1,10 +1,22 @@
 
+/* COLOR CHANGE LEDS - KEVIN KELLAR
+ *  This program utilizes red, green and blue LEDs to produce light
+ *  in different colors.  A sequence of colors will flash, each flash
+ *  being followed by the lights turning dark for half a second.
+ *  
+ *  The arduino should be set up with the following hardware:
+ *    - A red LED with a 1kOhm resistor should be connected to pin 12
+ *    - A green LED with a 1kOhm resistor should be connected to pin 13
+ *    - A blue LED with a 1kOhm resistor shoule be connected to pin 14
+ *    * The setup can different than described above if the first 
+ *      three constants are adjusted accordingly
+ */
 
-const short LED_PIN_RED = 12
+const short LED_PIN_RED = 12           // Tells what LEDs are connected to what pin
 const short LED_PIN_GREEN = 13;
 const short LED_PIN_BLUE = 14;
 
-const byte COLOR_NONE = 0;
+const byte COLOR_NONE = 0;             // Defines constant numbers to represent the different colors
 const byte COLOR_RED = 1;
 const byte COLOR_GREEN = 2;
 const byte COLOR_BLUE = 3;
@@ -13,36 +25,37 @@ const byte COLOR_CYAN = 5;
 const byte COLOR_MAGENTA = 6;
 const byte COLOR_WHITE = 7;
 
-const long DURATION_LIGHT = 500;
+const long DURATION_LIGHT = 500;      // Defines the duration in ms the light will be on or off for the whole program
 const long DURATION_DARK = 500;
 
-long previousMillis;
+long previousMillis;                  // The variable that holds the last time the light's state was changed
 
-byte[] colorSequence;
+byte[] colorSequence;                 // An array that holds the sequence of codes representing the colors the light will be
 
-byte isLit;
-int index;
+byte isLit;                           // A variable that tells whether the light is currently lit (0=no, 1=yes)
+int index;                            // A variable that holds how many colors from the sequence have been shown so far
 
 void setup() 
 {
-  pinMode(LED_PIN_RED, OUTPUT);
+  pinMode(LED_PIN_RED, OUTPUT);       // Set all of the pins with LEDs to output mode
   pinMode(LED_PIN_GREEN, OUTPUT);
   pinMode(LED_PIN_BLUE, OUTPUT);
-  previousMillis = millis();
-  colorSequence = new byte[] {COLOR_RED, COLOR_BLUE, COLOR_YELLOW, COLOR_GREEN, COLOR_WHITE};
-  index = 0;
-  isLit = 0;
+  previousMillis = millis();          // Makes it so the light will be off for DURATION_DARK until it starts the sequence
+  colorSequence = new byte[]          // Defines the sequence of colors in terms of the constants (aka English)
+  {COLOR_RED, COLOR_BLUE, COLOR_YELLOW, COLOR_GREEN, COLOR_WHITE};
+  index = 0;                          // Start the the flashes at the first color in the sequence
+  isLit = 0;                          // The lights are starting unlit (unlit = 0)
 }
 
 void loop() 
 {
-  if (millis() - previousMillis > getDelay())
+  if (millis() - previousMillis >= getDelay())  // If time elapsed since last change in the light's state is long enough
   {
-    previousMillis = millis();
-    isLit = (isLit + 1) % 2;
-    if (isLit == 0)
+    previousMillis = millis();                  // Sets the last time the light was changed to "now"
+    isLit = (isLit + 1) % 2;                    // Flips isLit from 0 --> 1 or 1 --> 0
+    if (isLit == 0)                             // If turning the light off, then
     {
-      index++;
+      index++;                                  // Increment the 
       setColor(COLOR_NONE);
     }
     else
