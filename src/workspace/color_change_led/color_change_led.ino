@@ -5,16 +5,16 @@
  *  being followed by the lights turning dark for half a second.
  *  
  *  The arduino should be set up with the following hardware:
- *    - A red LED with a 1kOhm resistor should be connected to pin 12
- *    - A green LED with a 1kOhm resistor should be connected to pin 13
- *    - A blue LED with a 1kOhm resistor shoule be connected to pin 14
+ *    - A red LED with a 1kOhm resistor should be connected to pin 7
+ *    - A green LED with a 1kOhm resistor should be connected to pin 8
+ *    - A blue LED with a 1kOhm resistor shoule be connected to pin 9
  *    * The setup can different than described above if the first 
  *      three constants are adjusted accordingly
  */
 
-const short LED_PIN_RED = 12           // Tells what LEDs are connected to what pin
-const short LED_PIN_GREEN = 13;
-const short LED_PIN_BLUE = 14;
+const short LED_PIN_RED = 7;           // Tells what LEDs are connected to what pin
+const short LED_PIN_GREEN = 8;
+const short LED_PIN_BLUE = 9;
 
 const byte COLOR_NONE = 0;             // Defines constant numbers to represent the different colors
 const byte COLOR_RED = 1;
@@ -30,7 +30,8 @@ const long DURATION_DARK = 500;
 
 long previousMillis;                  // The variable that holds the last time the light's state was changed
 
-byte[] colorSequence;                 // An array that holds the sequence of codes representing the colors the light will be
+byte colorSequence[] =                // An array that holds the sequence of codes representing the colors the light will be
+{COLOR_RED, COLOR_BLUE, COLOR_YELLOW, COLOR_GREEN, COLOR_WHITE};
 
 byte isLit;                           // A variable that tells whether the light is currently lit (0=no, 1=yes)
 int index;                            // A variable that holds how many colors from the sequence have been shown so far
@@ -40,9 +41,7 @@ void setup()
   pinMode(LED_PIN_RED, OUTPUT);       // Set all of the pins with LEDs to output mode
   pinMode(LED_PIN_GREEN, OUTPUT);
   pinMode(LED_PIN_BLUE, OUTPUT);
-  previousMillis = millis();          // Makes it so the light will be off for DURATION_DARK until it starts the sequence
-  colorSequence = new byte[]          // Defines the sequence of colors in terms of the constants (aka English)
-  {COLOR_RED, COLOR_BLUE, COLOR_YELLOW, COLOR_GREEN, COLOR_WHITE};
+  previousMillis = millis();          // Makes it so the light will be off for DURATION_DARK until it starts the sequence  
   index = 0;                          // Start the the flashes at the first color in the sequence
   isLit = 0;                          // The lights are starting unlit (unlit = 0)
 }
