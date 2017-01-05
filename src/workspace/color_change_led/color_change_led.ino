@@ -25,13 +25,14 @@ const byte COLOR_CYAN = 5;
 const byte COLOR_MAGENTA = 6;
 const byte COLOR_WHITE = 7;
 
-const long DURATION_LIGHT = 500;      // Defines the duration in ms the light will be on or off for the whole program
+const long DURATION_LIGHT = 1000;      // Defines the duration in ms the light will be on or off for the whole program
 const long DURATION_DARK = 500;
 
 long previousMillis;                  // The variable that holds the last time the light's state was changed
 
 byte colorSequence[] =                // An array that holds the sequence of codes representing the colors the light will be
-{COLOR_RED, COLOR_BLUE, COLOR_YELLOW, COLOR_GREEN, COLOR_WHITE};
+                                      // The website wants "red, yellow, green, turquioise, blue violet and back to red"
+{COLOR_RED, COLOR_YELLOW, COLOR_GREEN, COLOR_CYAN, COLOR_BLUE, COLOR_MAGENTA, COLOR_RED, COLOR_NONE, COLOR_NONE, COLOR_NONE, COLOR_NONE};
 
 byte isLit;                           // A variable that tells whether the light is currently lit (0=no, 1=yes)
 int index;                            // A variable that holds how many colors from the sequence have been shown so far
@@ -41,6 +42,7 @@ void setup()
   pinMode(LED_PIN_RED, OUTPUT);       // Set all of the pins with LEDs to output mode
   pinMode(LED_PIN_GREEN, OUTPUT);
   pinMode(LED_PIN_BLUE, OUTPUT);
+  pinMode(13, OUTPUT);
   previousMillis = millis();          // Makes it so the light will be off for DURATION_DARK until it starts the sequence  
   index = 0;                          // Start the the flashes at the first color in the sequence
   isLit = 0;                          // The lights are starting unlit (unlit = 0)
@@ -59,7 +61,7 @@ void loop()
     }
     else
     {
-      setColor(colorSequence[index]);           // Turn the light on and to the current color in the sequence
+      setColor(colorSequence[index % sizeof(colorSequence)]);           // Turn the light on and to the current color in the sequence
     }
   }
 }
