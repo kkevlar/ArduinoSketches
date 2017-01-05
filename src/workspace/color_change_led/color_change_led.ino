@@ -1,5 +1,5 @@
 
-/* COLOR CHANGE LEDS - KEVIN KELLAR
+/* COLOR CHANGE LEDS - KEVIN KELLAR - January 5, 2017
  *  This program utilizes red, green and blue LEDs to produce light
  *  in different colors.  A sequence of colors will flash, each flash
  *  being followed by the lights turning dark for half a second.
