@@ -10,7 +10,21 @@ void setup()
 {
   pinMode(SWITCH_PIN, INPUT);
 }
-
+void loop()
+{
+	Serial.begin(9600);
+	long lastprint = millis();
+	while(true)
+	{
+		switchPressIncrementSpotlight();
+		if(millis() - lastprint > 1000)
+		{
+			Serial.println(pressCount);
+			lastprint = millis();
+		}
+		delay(10);
+	}
+}
 void switchPressIncrementSpotlight()
 {
 	long time = millis();
