@@ -2,26 +2,40 @@
 
 const int SWITCH_PIN = 2;
 const int FIRST_LED_PIN = 5;
-const int NO_LEDS = 5;
+const int NO_LEDS = 2;
 const int DOWN_THRESHOLD_MILLIS = 25;
 
 int pressCount = 0;
 long changeStartTime = 0;
 int currState = 0;
-
+int loopCount = 2;
 void setup()
 {
-  pinMode(SWITCH_PIN, INPUT);
-  pinMode(FIRST_LED_PIN, OUTPUT);
+	//Serial.begin(9600);
+	pinMode(SWITCH_PIN, INPUT);
+	for(int i = 0; i < NO_LEDS; i++)
+		pinMode((FIRST_LED_PIN + i), OUTPUT);
+
 }
 void loop()
 {
 	/*
 	digitalWrite(FIRST_LED_PIN,digitalRead(SWITCH_PIN));
 	*/
-	Serial.begin(9600);
 	switchPressIncrementSpotlight();
+	if(loopCount != pressCount)
+	{
+		int state1 = LOW;
+		int state2 = LOW;
+		if(pressCount % 2 == 0)
+			state1 = HIGH;
+		else
+			state2 = HIGH;
 
+		digitalWrite(FIRST_LED_PIN, state1);
+		digitalWrite((FIRST_LED_PIN+1), state2);
+		loopCount = pressCount;
+	}
 }
 void switchPressIncrementSpotlight()
 {
