@@ -37,7 +37,7 @@ void switchPressIncrementSpotlight()
 	int newState = readSwitchState();
 	if (newState == currState)
 		return;
-	if(currState == 1 &&
+	if(currState == HIGH &&
 			changeStartTime - time >
 			DOWN_THRESHOLD_MILLIS)
 		pressCount++;
@@ -52,8 +52,8 @@ int readSwitchState()
 	//delay(10);
 	//int second = digitalRead(SWITCH_PIN);
 	//if (init == second)
-	if(init == 1)
-		Serial.println("gotem")
+	if(init == HIGH)
+		Serial.println("gotem");
       return init;
 	//return 0;
 }
