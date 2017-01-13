@@ -3,7 +3,7 @@
 const int SWITCH_PIN = 2;
 const int FIRST_LED_PIN = 5;
 const int NO_LEDS = 2;
-const int DOWN_THRESHOLD_MILLIS = 25;
+const int DOWN_THRESHOLD_MILLIS = 75;
 
 int pressCount = 0;
 long changeStartTime = 0;
@@ -47,6 +47,9 @@ void switchPressIncrementSpotlight()
 			time - changeStartTime >
 			DOWN_THRESHOLD_MILLIS)
 		pressCount++;
+   if(time - changeStartTime <
+      DOWN_THRESHOLD_MILLIS)
+      return;
 	changeStartTime = time;
 	currState = newState;
 }
