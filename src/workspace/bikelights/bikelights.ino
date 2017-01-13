@@ -1,14 +1,14 @@
 #include "Arduino.h"
 
 const int SWITCH_PIN = 2;
-const int FIRST_LED_PIN = 5;
-const int NO_LEDS = 5;
-const int DOWN_THRESHOLD_MILLIS = 25;
+const int FIRST_LED_PIN = 4;
+const int NO_LEDS = 6;
+const int DOWN_THRESHOLD_MILLIS = 100;
 
-int pressCount = 0;
+int pressCount = 1;
 long changeStartTime = 0;
 int currState = 0;
-int loopCount = 2;
+int loopCount = -1;
 void setup()
 {
 	//Serial.begin(9600);
@@ -21,32 +21,51 @@ void loop()
 {
 	/*
 	digitalWrite(FIRST_LED_PIN,digitalRead(SWITCH_PIN));
-	*/
+	 */
 	switchPressIncrementSpotlight();
 	if(loopCount != pressCount)
 	{
-		if(pressCount % 5 == 1)
-			for(int i = 0; i < NO_LEDS; i++)
-					digitalWrite((FIRST_LED_PIN + i), LOW);
-		if (pressCount % 5 == 0)
-			for(int i = 0; i < NO_LEDS; i++)
-								digitalWrite((FIRST_LED_PIN + i), HIGH);
+		int count = pressCount;
+   //Serial.print(count);
+  // Serial.println(":");
+		for (int i = 0; i < NO_LEDS; i++)
+		{
+      float inverse = NO_LEDS-(i+1);
+			float power = pow(2,inverse);
+     int realPower = round(power);
+			int num = count / realPower;
+      if(count >= realPower)
+			  count -= realPower;
+			if(num == 1)
+				digitalWrite(FIRST_LED_PIN+i,HIGH);
+			else
+				digitalWrite(FIRST_LED_PIN+i,LOW);
+       // Serial.print(realPower);
+        //Serial.print("  ");
+       // Serial.println(num);
+		}
+   //Serial.println();
 		loopCount = pressCount;
 	}
 }
+
 void switchPressIncrementSpotlight()
 {
-	long time = millis();
-	int newState = readSwitchState();
-	if (newState == currState)
-		return;
-	if(currState == HIGH &&
-			time - changeStartTime >
-			DOWN_THRESHOLD_MILLIS)
-		pressCount++;
-	changeStartTime = time;
-	currState = newState;
+  long time = millis();
+  int newState = readSwitchState();
+  if (newState == currState)
+    return;
+  if(currState == HIGH &&
+      time - changeStartTime >
+      DOWN_THRESHOLD_MILLIS)
+    pressCount++;
+   if(time - changeStartTime <
+      DOWN_THRESHOLD_MILLIS)
+      return;
+  changeStartTime = time;
+  currState = newState;
 }
+
 
 int readSwitchState()
 {
