@@ -10,7 +10,7 @@ long changeStartTime = 0;
 int currState = 0;
 int loopCount = -1;
 boolean firstLoopPass = true;
-long state2FlashTime = 0;
+long stateFlashTime = 0;
 boolean state2FlashState = false;
 void setup()
 {
@@ -34,21 +34,42 @@ void loop()
 	if(firstLoopPass = true && mod == 1)
 		for(int i = 0; i < NO_LEDS; i++)
 			digitalWrite((FIRST_LED_PIN + i), HIGH);
-	if(mod == 2 && millis() - state2FlashTime > 1000 && state2FlashState == false)
+	if(mod == 2 && millis() - stateFlashTime > 1000 && state2FlashState == false)
 	{
 		for(int i = 0; i < NO_LEDS; i++)
 			digitalWrite((FIRST_LED_PIN + i), HIGH);
-		state2FlashTime = millis();
+		stateFlashTime = millis();
 		state2FlashState = true;
 	}
-	if(mod == 2 && millis() - state2FlashTime > 1000 && state2FlashState == true)
+	if(mod == 2 && millis() - stateFlashTime > 1000 && state2FlashState == true)
 	{
 		for(int i = 0; i < NO_LEDS; i++)
 			digitalWrite((FIRST_LED_PIN + i), LOW);
-		state2FlashTime = millis();
+		stateFlashTime = millis();
 		state2FlashState = false;
 	}
-
+	if(mod == 3 && firstLoopPass == true)
+		stateFlashTime = millis();
+	if(mod == 3)
+	{
+		float count = (millis() - stateFlashTime) / 1000; 
+		for (int i = 0; i < NO_LEDS; i++)
+		{
+			float inverse = NO_LEDS-(i+1);
+			float power = pow(2,inverse);
+			int realPower = round(power);
+			int num = count / realPower;
+			if(count >= realPower)
+				count -= realPower;
+			if(num == 1)
+				digitalWrite(FIRST_LED_PIN+i,HIGH);
+			else
+				digitalWrite(FIRST_LED_PIN+i,LOW);
+		}
+	}
+	if(firstLoopPass = true && mod == 4)
+		for(int i = 0; i < NO_LEDS; i++)
+			digitalWrite((FIRST_LED_PIN + i), LOW);
 	firstLoopPass = false;
 }
 
