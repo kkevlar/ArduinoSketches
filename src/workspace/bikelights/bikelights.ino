@@ -5,11 +5,11 @@ const int FIRST_LED_PIN = 4;
 const int NO_LEDS = 6;
 const int DOWN_THRESHOLD_MILLIS = 100;
 
-int pressCount = 1;
+int pressCount = 0;
 long changeStartTime = 0;
 int currState = 0;
 int loopCount = -1;
-boolean firstLoopPass = true;
+boolean firstLoopPass = false;
 long stateFlashTime = 0;
 boolean state2FlashState = false;
 void setup()
@@ -28,10 +28,10 @@ void loop()
 		loopCount = pressCount;
 	}
 	int mod = pressCount % 5;
-	if(firstLoopPass = true && mod == 0)
+	if(firstLoopPass == true && mod == 0)
 		for(int i = 0; i < NO_LEDS; i++)
 			digitalWrite((FIRST_LED_PIN + i), LOW);
-	if(firstLoopPass = true && mod == 1)
+	if(firstLoopPass == true && mod == 1)
 		for(int i = 0; i < NO_LEDS; i++)
 			digitalWrite((FIRST_LED_PIN + i), HIGH);
 	if(mod == 2 && millis() - stateFlashTime > 1000 && state2FlashState == false)
@@ -75,6 +75,7 @@ void loop()
 
 void switchPressIncrementSpotlight()
 {
+
 	long time = millis();
 	int newState = readSwitchState();
 	if (newState == currState)
@@ -88,10 +89,12 @@ void switchPressIncrementSpotlight()
 		return;
 	changeStartTime = time;
 	currState = newState;
+
 }
 
 
 int readSwitchState()
 {
 	int init = digitalRead(SWITCH_PIN);
+	return init;
 }
