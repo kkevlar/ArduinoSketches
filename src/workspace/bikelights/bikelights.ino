@@ -31,7 +31,7 @@ void loop()
     digitalWrite((FIRST_LED_PIN + i), LOW);
  if(firstLoopPass = true && mod == 1)
   for(int i = 0; i < NO_LEDS; i++)
-    digitalWrite((FIRST_LED_PIN + i), LOW);
+    digitalWrite((FIRST_LED_PIN + i), HIGH);
    
   firstLoopPass = false;
 }
