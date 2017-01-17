@@ -9,9 +9,9 @@ int pressCount = 1;
 long changeStartTime = 0;
 int currState = 0;
 int loopCount = -1;
-boolean firstLoopPass = true;
 void setup()
 {
+	//Serial.begin(9600);
 	pinMode(SWITCH_PIN, INPUT);
 	for(int i = 0; i < NO_LEDS; i++)
 		pinMode((FIRST_LED_PIN + i), OUTPUT);
@@ -19,14 +19,34 @@ void setup()
 }
 void loop()
 {
+	/*
+	digitalWrite(FIRST_LED_PIN,digitalRead(SWITCH_PIN));
+	 */
 	switchPressIncrementSpotlight();
 	if(loopCount != pressCount)
 	{
-		firstLoopPass = true;
-    loopCount = pressCount;
+		int count = pressCount;
+   //Serial.print(count);
+  // Serial.println(":");
+		for (int i = 0; i < NO_LEDS; i++)
+		{
+      float inverse = NO_LEDS-(i+1);
+			float power = pow(2,inverse);
+     int realPower = round(power);
+			int num = count / realPower;
+      if(count >= realPower)
+			  count -= realPower;
+			if(num == 1)
+				digitalWrite(FIRST_LED_PIN+i,HIGH);
+			else
+				digitalWrite(FIRST_LED_PIN+i,LOW);
+       // Serial.print(realPower);
+        //Serial.print("  ");
+       // Serial.println(num);
+		}
+   //Serial.println();
+		loopCount = pressCount;
 	}
-   
-  firstLoopPass = false;
 }
 
 void switchPressIncrementSpotlight()
@@ -50,4 +70,11 @@ void switchPressIncrementSpotlight()
 int readSwitchState()
 {
 	int init = digitalRead(SWITCH_PIN);
+	//delay(10);
+	//int second = digitalRead(SWITCH_PIN);
+	//if (init == second)
+	//if(init == HIGH)
+		//Serial.println("gotem");
+      return init;
+	//return 0;
 }
