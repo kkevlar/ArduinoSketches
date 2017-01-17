@@ -86,27 +86,29 @@ void loop()
 	{
 		float count =                   //Finds how many half-seconds have elapsed
 				(millis() - stateStartTime) / 500; 
-		for (int i = 0; i < NO_LEDS; i++)
+		for (int i = 0; i < NO_LEDS; i++)//For each LED...
 		{
-			float inverse = NO_LEDS-(i+1);
-			float power = pow(2,inverse);
-			int realPower = round(power);
-			int num = count / realPower;
-			if(count >= realPower)
-				count -= realPower;
-			if(num == 1)
+			float inverse = NO_LEDS-(i+1);//Finds the highest power of 2 that can
+			                              //  be represented with the number of LEDS
+			float power = pow(2,inverse);//Evaluates the power of two
+			int realPower = round(power);//Rounds the power to an int
+			int num = count / realPower; //Finds if the number is greater than the
+			                             //  current bit trying to be represented
+			if(count >= realPower)       //If the bit was able to be represened...
+				count -= realPower;      //Then subtract the power of 2 from the original
+			if(num == 1)                 //If the bit should be on.... then turn light on
 				digitalWrite(FIRST_LED_PIN+i,HIGH);
-			else
+			else                         //Otherwise turn off the light 
 				digitalWrite(FIRST_LED_PIN+i,LOW);
 		}
 	}
-	if(mod == 4)
+	if(mod == 4)                         //If the lights are in state4, flash "SOS"
 	{
 		float timePassed = (millis() - stateStartTime);
-		float count = timePassed / 300;
-		int intCount = (int) count;
-		int sosMod = (intCount % 37)+1;
-		if(sosMod <= 5 ||
+		float count = timePassed / 300;  //Counts how many instances of 300ms have elapsed 
+		int intCount = (int) count;      //Casts the count to an integer
+		int sosMod = (intCount % 37)+1;  //Has the count cycle through 37 values, start at 1
+		if(sosMod <= 5 ||                //Some super ugly logic that makes it flash properly
 				sosMod >= 33 ||
 				(sosMod <= 13 && (sosMod % 2 == 1 || sosMod == 12)) ||
 				sosMod == 17 ||
@@ -120,7 +122,7 @@ void loop()
 				digitalWrite((FIRST_LED_PIN + i), HIGH);
 
 	}
-	fLP = false;
+	fLP = false;                         //Stores that the loop has completed at least once
 }
 
 void switchPressIncrementSpotlight()
