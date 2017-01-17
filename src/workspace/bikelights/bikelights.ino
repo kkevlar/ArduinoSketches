@@ -10,7 +10,7 @@ long changeStartTime = 0;
 int currState = 0;
 int loopCount = -1;
 boolean firstLoopPass = false;
-long stateFlashTime = 0;
+long stateStartTime = 0;
 boolean state2FlashState = false;
 void setup()
 {
@@ -34,25 +34,28 @@ void loop()
 	if(firstLoopPass == true && mod == 1)
 		for(int i = 0; i < NO_LEDS; i++)
 			digitalWrite((FIRST_LED_PIN + i), HIGH);
-	if(mod == 2 && millis() - stateFlashTime > 1000 && state2FlashState == false)
+	if((mod == 2 || mod == 3 || mod == 4)  && firstLoopPass == true)
+  {
+		stateStartTime = millis();
+    state2FlashState = true;
+  }
+	if(mod == 2 && millis() - stateStartTime > 1000 && state2FlashState == false)
 	{
 		for(int i = 0; i < NO_LEDS; i++)
 			digitalWrite((FIRST_LED_PIN + i), HIGH);
-		stateFlashTime = millis();
+		stateStartTime = millis();
 		state2FlashState = true;
 	}
-	if(mod == 2 && millis() - stateFlashTime > 1000 && state2FlashState == true)
+	if(mod == 2 && millis() - stateStartTime > 1000 && state2FlashState == true)
 	{
 		for(int i = 0; i < NO_LEDS; i++)
 			digitalWrite((FIRST_LED_PIN + i), LOW);
-		stateFlashTime = millis();
+		stateStartTime = millis();
 		state2FlashState = false;
 	}
-	if(mod == 3 && firstLoopPass == true)
-		stateFlashTime = millis();
 	if(mod == 3)
 	{
-		float count = (millis() - stateFlashTime) / 1000; 
+		float count = (millis() - stateStartTime) / 500; 
 		for (int i = 0; i < NO_LEDS; i++)
 		{
 			float inverse = NO_LEDS-(i+1);
@@ -67,9 +70,26 @@ void loop()
 				digitalWrite(FIRST_LED_PIN+i,LOW);
 		}
 	}
-	if(firstLoopPass = true && mod == 4)
-		for(int i = 0; i < NO_LEDS; i++)
-			digitalWrite((FIRST_LED_PIN + i), LOW);
+	if(mod == 4)
+	{
+		float timePassed = (millis() - stateStartTime);
+		float count = timePassed / 300;
+		int intCount = (int) count;
+		int sosMod = (intCount % 37)+1;
+		if(sosMod <= 5 ||
+				sosMod >= 33 ||
+				(sosMod <= 13 && (sosMod % 2 == 1 || sosMod == 12)) ||
+				sosMod == 17 ||
+				sosMod == 21 ||
+				(sosMod >= 25 && sosMod <= 27) ||
+				((sosMod >= 27 && sosMod <= 33) && sosMod % 2 == 1) )
+			for(int i = 0; i < NO_LEDS; i++)
+				digitalWrite((FIRST_LED_PIN + i), LOW);
+		else
+			for(int i = 0; i < NO_LEDS; i++)
+				digitalWrite((FIRST_LED_PIN + i), HIGH);
+
+	}
 	firstLoopPass = false;
 }
 
