@@ -129,18 +129,18 @@ void switchPressIncrementSpotlight()
 {
 
 	long time = millis();
-	int newState = readSwitchState();
-	if (newState == currState)
+	int newState = readSwitchState();   //Runs the function to read the switches state
+	if (newState == currState)          //If the state hasn't changed, leave the funtion
 		return;
 	if(currState == HIGH &&
 			time - changeStartTime >
-	DOWN_THRESHOLD_MILLIS)
-		pressCount++;
+	DOWN_THRESHOLD_MILLIS)              //If the switch was down and was held long enough...
+		pressCount++;                   //Then increment the number of presses
 	if(time - changeStartTime <
-			DOWN_THRESHOLD_MILLIS)
-		return;
-	changeStartTime = time;
-	currState = newState;
+			DOWN_THRESHOLD_MILLIS)      //If the switch changed state to quick....
+		return;                         //Leave the function
+	changeStartTime = time;             //Store when the switch changed state
+	currState = newState;               //Store that the switch did change state
 
 }
 
