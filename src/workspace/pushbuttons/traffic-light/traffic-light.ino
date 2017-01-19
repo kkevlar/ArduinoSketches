@@ -113,13 +113,14 @@ void loop()
 	/* Pin13 Block:
 	 *   Causes the onboard LED to blink while the sequence is in progress. 
 	 */
-	if(millis() - pin13LastFlashTime > 300)
+	if(millis() - pin13LastFlashTime > 500)
 	{
 		pin13FlashState = !pin13FlashState;
 		if(pin13FlashState)
 			digitalWrite(13,HIGH);
 		else
 			digitalWrite(13,LOW);
+     pin13LastFlashTime = millis();
 	}
 	
 	/* State decision block:
@@ -221,7 +222,7 @@ void setState(byte state)
 		 */
 		float div = 500;
 		int count = (int) (millis()/div);
-		newFlashState = (count % 2)+1;
+		int newFlashState = (count % 2)+1;
 		if(newFlashState != flashState)
 		{
 			digitalWrite(TL_RED_PIN, HIGH);
