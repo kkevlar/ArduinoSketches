@@ -1,5 +1,15 @@
 /* TRAFFIC_LIGHT - KEVIN KELLAR - January 19, 2017
- *  
+ *   Has the arduino simulate a traffic light and pedestrian
+ *   crossing. When the button is pressed, the light eventually
+ *   changes from green to yellow to red, while the pedestiran
+ *   crossing light changed from red, to green, to flashing, and
+ *   then back to red.
+ *   
+ *   Five LEDs with resistors should be connected to different
+ *   pins according to the fist set of constants below.
+ *   
+ *   The button should utilize a pull-up resistor because that is
+ *   the input mode set for that pin in the setup() function.
  */
 
 /* Pin constants: 
@@ -95,7 +105,7 @@ void loop()
 {
 	//The switch press function tests for button state changes
 	switchPressTester();
-	
+
 	/* First Control Block:
 	 *   Tests to see if the button was pressed and the sequence
 	 *   still hasn't started. If so, it starts the sequence.
@@ -109,7 +119,7 @@ void loop()
 	}
 	if(!startSequence)
 		return;
-	
+
 	/* Pin13 Block:
 	 *   Causes the onboard LED to blink while the sequence is in progress. 
 	 */
@@ -120,9 +130,9 @@ void loop()
 			digitalWrite(13,HIGH);
 		else
 			digitalWrite(13,LOW);
-     pin13LastFlashTime = millis();
+		pin13LastFlashTime = millis();
 	}
-	
+
 	/* State decision block:
 	 *   Finds the furthest state down the array that enough time 
 	 *   has elapsed to allow.  If not enough time has elapsed to 
@@ -146,7 +156,7 @@ void loop()
 	}
 	if(newState == lightsState && lightsState != STATE_FLASH)
 		return;
-	
+
 	/* State setting block:
 	 *   However, if the state is changing, then the LEDs need to
 	 *   be changed to account for this state change, so the 
@@ -159,7 +169,7 @@ void loop()
 		flashState = 0;
 	lightsState = newState;
 	setState(lightsState);
-	
+
 	/* Resetting Block:
 	 *   If the state was just set to the "green light" state,
 	 *   then that means that the cycle has finished.  To allow
@@ -229,9 +239,9 @@ void setState(byte state)
 			digitalWrite(TL_YLW_PIN, LOW);
 			digitalWrite(TL_GRN_PIN, LOW);
 			digitalWrite(PS_RED_PIN, LOW);
-		
+
 			flashState = newFlashState;
-			
+
 			if(flashState == 1)
 				digitalWrite(PS_GRN_PIN, HIGH);
 			else
@@ -255,7 +265,7 @@ void switchPressTester()
 	int newState = readSwitchState();   
 	if (newState == currState)
 		return;
-	
+
 	/* Button press Block:
 	 *   Only tells the loop() method that the button was pressed
 	 *   if the button WAS down, and was held for a time that 
@@ -264,14 +274,14 @@ void switchPressTester()
 	 */
 	if(currState == HIGH && time - changeStartTime > DWN_TIME)
 		button_pressed = true;
-	
+
 	/* Bouce reduction block:
 	 *   Causes the method to exit if there was a state change
 	 *   that was too short.
 	 */
 	if(time - changeStartTime < DWN_TIME)
 		return;
-	
+
 	/* Mutation block: 
 	 *   If the previous change in state lasted long enough, then the
 	 *   new state is logged and the time that the state
