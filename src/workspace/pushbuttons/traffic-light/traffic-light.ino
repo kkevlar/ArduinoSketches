@@ -1,14 +1,14 @@
-/* TRAFFIC_LIGHT - KEVIN KELLAR - January 17, 2017
+/* TRAFFIC_LIGHT - KEVIN KELLAR - January 19, 2017
  *  
  */
-const int SWITCH_PIN = 2;               //Sets the input pin
-const int DOWN_THRESHOLD_MILLIS = 100;  //Sets how long the pushbutton needs to be down
 
-const int TL_RED_PIN = 5;
-const int TL_YLW_PIN = 6;
-const int TL_GRN_PIN = 7;
-const int PS_RED_PIN = 9;
-const int PS_GRN_PIN = 10;
+const int DOWN_THRESHOLD_MILLIS = 100;  //Sets how long the pushbutton needs to be down
+const int SWITCH_PIN = 13;               //Sets the input pin
+const int TL_RED_PIN = 10;
+const int TL_YLW_PIN = 8;
+const int TL_GRN_PIN = 6;
+const int PS_RED_PIN = 4;
+const int PS_GRN_PIN = 2;
 
 const int DUR_INIT_STATE = 5000;
 const int DUR_YELLOW_STATE = 5000;
