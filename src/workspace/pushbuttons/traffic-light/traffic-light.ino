@@ -6,7 +6,7 @@
  *  Sets the hardware configuration of the Arduino
  *  and the number of ms needed to trigger a button press.
  */
-const int DOWN_THRESHOLD_MILLIS = 100;
+const int DWN_TIME = 100;
 const int SWITCH_PIN = 12;
 const int TL_RED_PIN = 10;
 const int TL_YLW_PIN = 9;
@@ -91,7 +91,7 @@ void setup()
 void loop()
 {
 	//The switch press function tests for button state changes
-	switchPressIncrementSpotlight();
+	switchPressTester();
 	
 	/* First Control Block:
 	 *   Tests to see if the button was pressed and the sequence
@@ -224,24 +224,52 @@ void setState(byte state)
 	}
 }
 
-void switchPressIncrementSpotlight()
+/* switchPressTester()
+ *   Tests for a change in the switch's state and then logs
+ *   the time of the change if the switch's state did change.
+ *   
+ */
+void switchPressTester()
 {
+	/* Inital Control Block:
+	 *   Tests for a change in state and exits if there
+	 *   isnt one.
+	 */
 	long time = millis();
-	int newState = readSwitchState();   //Runs the function to read the switches state
-	if (newState == currState)          //If the state hasn't changed, leave the funtion
+	int newState = readSwitchState();   
+	if (newState == currState)
 		return;
-	if(currState == HIGH &&
-			time - changeStartTime >
-	DOWN_THRESHOLD_MILLIS)              //If the switch was down and was held long enough...
-		button_pressed = true;          //Store that the button was pressed
-	if(time - changeStartTime <
-			DOWN_THRESHOLD_MILLIS)      //If the switch changed state to quick....
-		return;                         //Leave the function
-	changeStartTime = time;             //Store when the switch changed state
-	currState = newState;               //Store that the switch did change state
+	
+	/* Button press Block:
+	 *   Only tells the loop() method that the button was pressed
+	 *   if the button WAS down, and was held for a time that 
+	 *   is longer than the required duration set at the 
+	 *   top of the sketch.
+	 */
+	if(currState == HIGH && time - changeStartTime > DWN_TIME)
+		button_pressed = true;
+	
+	/* Bouce reduction block:
+	 *   Causes the method to exit if there was a state change
+	 *   that was too short.
+	 */
+	if(time - changeStartTime < DWN_TIME)
+		return;
+	
+	/* Mutation block: 
+	 *   If the previous change in state lasted long enough, then the
+	 *   new state is logged and the time that the state
+	 *   started is reset.
+	 */
+	changeStartTime = time;
+	currState = newState;
 }
 
-
+/* readSwitchState():
+ *   Exists as a different function to allow for easy changes
+ *   if further steps need to be taken to reduce false presses
+ *   with the "bounce" problem.
+ */
 int readSwitchState()
 {
 	int init = digitalRead(SWITCH_PIN);
