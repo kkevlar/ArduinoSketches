@@ -64,6 +64,8 @@ boolean button_pressed = false;
 boolean startSequence = false;                   
 long startTime = 0;
 byte lightsState = 0;
+long pin13LastFlashTime = 0;
+boolean pin13FlashState = false;
 
 /* Flash variables:
  *   These variables are for the setState() function to know
@@ -85,6 +87,7 @@ void setup()
 	pinMode(TL_GRN_PIN, OUTPUT);
 	pinMode(PS_RED_PIN, OUTPUT);
 	pinMode(PS_GRN_PIN, OUTPUT);
+	pinMode(13,OUTPUT);
 	setState(STATE_GRN);
 } 
 
@@ -106,6 +109,18 @@ void loop()
 	}
 	if(!startSequence)
 		return;
+	
+	/* Pin13 Block:
+	 *   Causes the onboard LED to blink while the sequence is in progress. 
+	 */
+	if(millis() - pin13LastFlashTime > 300)
+	{
+		pin13FlashState = !pin13FlashState;
+		if(pin13FlashState)
+			digitalWrite(13,HIGH);
+		else
+			digitalWrite(13,LOW);
+	}
 	
 	/* State decision block:
 	 *   Finds the furthest state down the array that enough time 
