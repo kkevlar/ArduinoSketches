@@ -18,6 +18,7 @@
  */
 const int DWN_TIME = 100;
 const int SWITCH_PIN = 12;
+const int RESET_PIN = 11;
 const int TL_RED_PIN = 10;
 const int TL_YLW_PIN = 9;
 const int TL_GRN_PIN = 8;
@@ -62,8 +63,10 @@ const byte STATES[] = {STATE_YLW,
  *   These variables are for the button methods to store the current
  *   state of the button and how long it has been in that state.
  */
-long changeStartTime = 0; 
-int currState = 0;
+long redChangeTime = 0; 
+int redButtonState = 0;
+long greenChangeTime = 0;
+int greenButtonState = 0;
 
 /* Loop() variables:
  *   These variables allow the loop() fuction to know if the button
@@ -92,20 +95,21 @@ byte flashState = 0;
 void setup()
 {
 	pinMode(SWITCH_PIN, INPUT_PULLUP);
+	pinMode(RESET_PIN, INPUT_PULLUP);
 	pinMode(TL_RED_PIN, OUTPUT);
 	pinMode(TL_YLW_PIN, OUTPUT);
 	pinMode(TL_GRN_PIN, OUTPUT);
 	pinMode(PS_RED_PIN, OUTPUT);
 	pinMode(PS_GRN_PIN, OUTPUT);
 	pinMode(13,OUTPUT);
-	setState(STATE_GRN);
+	reset();
 } 
 
 void loop()
 {
 	//The switch press function tests for button state changes
 	switchPressTester();
-
+  //secondarySwitchPressTester();
 	/* First Control Block:
 	 *   Tests to see if the button was pressed and the sequence
 	 *   still hasn't started. If so, it starts the sequence.
@@ -178,11 +182,17 @@ void loop()
 	 */
 	if(lightsState == STATE_GRN)
 	{
-		lightsState = 0;
-		startSequence = false;
-		button_pressed = false;
-		startTime = 0;
+		reset();
 	}
+}
+
+void reset()
+{
+	lightsState = 0;
+	startSequence = false;
+	button_pressed = false;
+	startTime = 0;
+	setState(STATE_GRN);
 }
 
 /* setState():
@@ -262,8 +272,15 @@ void switchPressTester()
 	 *   isnt one.
 	 */
 	long time = millis();
-	int newState = readSwitchState();   
-	if (newState == currState)
+	int newState = readSwitchState(); 
+  if(redButtonState == LOW && time - redChangeTime > 2000)
+  {
+    reset();  
+    redChangeTime = time;
+    redButtonState = newState;
+    return;
+  }
+	if (newState == redButtonState)
 		return;
 
 	/* Button press Block:
@@ -272,14 +289,14 @@ void switchPressTester()
 	 *   is longer than the required duration set at the 
 	 *   top of the sketch.
 	 */
-	if(currState == HIGH && time - changeStartTime > DWN_TIME)
+	if(redButtonState == HIGH && time - redChangeTime > DWN_TIME)
 		button_pressed = true;
 
 	/* Bouce reduction block:
 	 *   Causes the method to exit if there was a state change
 	 *   that was too short.
 	 */
-	if(time - changeStartTime < DWN_TIME)
+	if(time - redChangeTime < DWN_TIME)
 		return;
 
 	/* Mutation block: 
@@ -287,8 +304,8 @@ void switchPressTester()
 	 *   new state is logged and the time that the state
 	 *   started is reset.
 	 */
-	changeStartTime = time;
-	currState = newState;
+	redChangeTime = time;
+	redButtonState = newState;
 }
 
 /* readSwitchState():
