@@ -2,14 +2,19 @@
  *  
  */
 
-const int DOWN_THRESHOLD_MILLIS = 100;  //Sets how long the pushbutton needs to be down
-const int SWITCH_PIN = 12;               //Sets the input pin
+/* Pin constants: 
+ *  Sets the hardware configuration of the Arduino
+ *  and the number of ms needed to trigger a button press.
+ */
+const int DOWN_THRESHOLD_MILLIS = 100;
+const int SWITCH_PIN = 12;
 const int TL_RED_PIN = 10;
 const int TL_YLW_PIN = 9;
 const int TL_GRN_PIN = 8;
 const int PS_RED_PIN = 7;
 const int PS_GRN_PIN = 6;
 
+// Time constants: The number of ms that should be spent in each state
 const int DUR_INIT_STATE = 5000;
 const int DUR_YELLOW_STATE = 5000;
 const int DUR_RED_STATE = 2000;
@@ -17,12 +22,19 @@ const int DUR_PED_STATE = 5000;
 const int DUR_FLASH_STATE = 5000;
 const int DUR_FINAL_STATE = 2000;
 
+// State constants: Each state in the cycle had a unique ID
 const byte STATE_GRN = 5;
 const byte STATE_YLW = 1;
 const byte STATE_RED = 2;
 const byte STATE_PED = 3;
 const byte STATE_FLASH = 4;
 
+/* Array constants: 
+ *   The durations and states arrays' indicies corrospond
+ *   to each other. For index 0, it can be read as: "after waiting 
+ *   the predetermined duration in the inital state, switch to the
+ *   yellow-light state". 
+ */
 const int DURATIONS[] = {DUR_INIT_STATE,
 		DUR_YELLOW_STATE,
 		DUR_RED_STATE,
@@ -36,18 +48,38 @@ const byte STATES[] = {STATE_YLW,
 		STATE_RED,
 		STATE_GRN};
 
+/* Button variables: 
+ *   These variables are for the button methods to store the current
+ *   state of the button and how long it has been in that state.
+ */
+long changeStartTime = 0; 
+int currState = 0;
 
-long changeStartTime = 0;               //Time since last button state change
-int currState = 0;                      //Current state of the pushbutton
+/* Loop() variables:
+ *   These variables allow the loop() fuction to know if the button
+ *   has been triggered, whether or not the light cycle sequece has
+ *   started, and at what time the light cycle started.
+ */
 boolean button_pressed = false;
 boolean startSequence = false;                   
 long startTime = 0;
 byte lightsState = 0;
-boolean isFlashStateLit = false;
 
+/* Flash variables:
+ *   These variables are for the setState() function to know
+ *   when to flash the green pedestrian light on or off.
+ */
+
+byte flashState = 0;
+
+/* setup():
+ *   Sets all of the pins to the correct mode (LED pins in OUPUT)
+ *   and the input pins in pullup mode.
+ *   Also starts the system in the "green light" state.
+ */
 void setup()
 {
-	pinMode(SWITCH_PIN, INPUT_PULLUP);         //The switch is the only input in the program
+	pinMode(SWITCH_PIN, INPUT_PULLUP);
 	pinMode(TL_RED_PIN, OUTPUT);
 	pinMode(TL_YLW_PIN, OUTPUT);
 	pinMode(TL_GRN_PIN, OUTPUT);
@@ -58,14 +90,34 @@ void setup()
 
 void loop()
 {
-	switchPressIncrementSpotlight();    //Runs the function to check for button changes
-	if(button_pressed && !startSequence)         //If the number of counts has changed....
+	//The switch press function tests for button state changes
+	switchPressIncrementSpotlight();
+	
+	/* First Control Block:
+	 *   Tests to see if the button was pressed and the sequence
+	 *   still hasn't started. If so, it starts the sequence.
+	 *   After that if-block, the function tests to see if the sequence
+	 *   has started. If not, it exits; there is nothing lef to do.
+	 */
+	if(button_pressed && !startSequence) 
 	{
 		startSequence = true;
 		startTime = millis();
 	}
 	if(!startSequence)
 		return;
+	
+	/* State decision block:
+	 *   Finds the furthest state down the array that enough time 
+	 *   has elapsed to allow.  If not enough time has elapsed to 
+	 *   trigger the next state, the for-loop exits and the furthest
+	 *   state that was tested for is stored in the newState variable.
+	 *   
+	 *   If this "newState" isn't different, then the function exits,
+	 *   because no changes to the LEDs need to be made, except if 
+	 *   the LEDs are in the "flashing" state because then the LEDs 
+	 *   might still need to be changed.
+	 */
 	long time = startTime;
 	byte newState = 0;
 	for(int i = 0; i < sizeof(STATES); i++)
@@ -78,8 +130,26 @@ void loop()
 	}
 	if(newState == lightsState && lightsState != STATE_FLASH)
 		return;
+	
+	/* State setting block:
+	 *   However, if the state is changing, then the LEDs need to
+	 *   be changed to account for this state change, so the 
+	 *   setState() function is called.
+	 *   
+	 *   This also resets the flashing state variable if just now
+	 *   entering a state.
+	 */
+	if(newState != lightsState)
+		flashState = 0;
 	lightsState = newState;
-	setState(lightsState);	
+	setState(lightsState);
+	
+	/* Resetting Block:
+	 *   If the state was just set to the "green light" state,
+	 *   then that means that the cycle has finished.  To allow
+	 *   the lights to be triggered again, the variables need to be
+	 *   set back to their initial conditions.
+	 */
 	if(lightsState == STATE_GRN)
 	{
 		lightsState = 0;
@@ -89,6 +159,9 @@ void loop()
 	}
 }
 
+/* setState():
+ *   Sets the state based on the id provided as a parameter
+ */
 void setState(byte state)
 {
 	if(state == STATE_GRN)
@@ -125,19 +198,25 @@ void setState(byte state)
 	}
 	if(state == STATE_FLASH)
 	{
-		digitalWrite(TL_RED_PIN, HIGH);
-		digitalWrite(TL_YLW_PIN, LOW);
-		digitalWrite(TL_GRN_PIN, LOW);
-		digitalWrite(PS_RED_PIN, LOW);
+		/* Flash State Setter:
+		 *   Sets the flash state so the green ped light blinks
+		 *   every half-second. To achive this, newFlashState
+		 *   alternates from 1 to 2 and the LEDs are only changed
+		 *   if this value is different from the on previous.
+		 */
 		float div = 500;
 		int count = (int) (millis()/div);
-		boolean isLit = false;
-		if(count % 2 == 1)
-			isLit = true;
-		if(isLit != isFlashStateLit)
+		newFlashState = (count % 2)+1;
+		if(newFlashState != flashState)
 		{
-			isFlashStateLit = isLit;
-			if(isLit)
+			digitalWrite(TL_RED_PIN, HIGH);
+			digitalWrite(TL_YLW_PIN, LOW);
+			digitalWrite(TL_GRN_PIN, LOW);
+			digitalWrite(PS_RED_PIN, LOW);
+		
+			flashState = newFlashState;
+			
+			if(flashState == 1)
 				digitalWrite(PS_GRN_PIN, HIGH);
 			else
 				digitalWrite(PS_GRN_PIN, LOW);
