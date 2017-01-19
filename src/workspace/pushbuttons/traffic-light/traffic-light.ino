@@ -3,12 +3,12 @@
  */
 
 const int DOWN_THRESHOLD_MILLIS = 100;  //Sets how long the pushbutton needs to be down
-const int SWITCH_PIN = 13;               //Sets the input pin
+const int SWITCH_PIN = 12;               //Sets the input pin
 const int TL_RED_PIN = 10;
-const int TL_YLW_PIN = 8;
-const int TL_GRN_PIN = 6;
-const int PS_RED_PIN = 4;
-const int PS_GRN_PIN = 2;
+const int TL_YLW_PIN = 9;
+const int TL_GRN_PIN = 8;
+const int PS_RED_PIN = 7;
+const int PS_GRN_PIN = 6;
 
 const int DUR_INIT_STATE = 5000;
 const int DUR_YELLOW_STATE = 5000;
@@ -28,14 +28,14 @@ const int DURATIONS[] = {DUR_INIT_STATE,
 		DUR_RED_STATE,
 		DUR_PED_STATE,
 		DUR_FLASH_STATE,
-		DUR_FINAL_STATE}
+		DUR_FINAL_STATE};
 const byte STATES[] = {STATE_YLW,
 		STATE_RED,
 		STATE_PED,
 		STATE_FLASH,
 		STATE_RED,
-		STATE_GRN,}
-}
+		STATE_GRN};
+
 
 long changeStartTime = 0;               //Time since last button state change
 int currState = 0;                      //Current state of the pushbutton
@@ -47,7 +47,7 @@ boolean isFlashStateLit = false;
 
 void setup()
 {
-	pinMode(SWITCH_PIN, INPUT);         //The switch is the only input in the program
+	pinMode(SWITCH_PIN, INPUT_PULLUP);         //The switch is the only input in the program
 	pinMode(TL_RED_PIN, OUTPUT);
 	pinMode(TL_YLW_PIN, OUTPUT);
 	pinMode(TL_GRN_PIN, OUTPUT);
@@ -61,7 +61,7 @@ void loop()
 	switchPressIncrementSpotlight();    //Runs the function to check for button changes
 	if(button_pressed && !startSequence)         //If the number of counts has changed....
 	{
-		loop_has_passed = true;
+		startSequence = true;
 		startTime = millis();
 	}
 	if(!startSequence)
@@ -132,15 +132,15 @@ void setState(byte state)
 		float div = 500;
 		int count = (int) (millis()/div);
 		boolean isLit = false;
-		if(count % 2 = 1)
+		if(count % 2 == 1)
 			isLit = true;
 		if(isLit != isFlashStateLit)
 		{
 			isFlashStateLit = isLit;
 			if(isLit)
-				digitalWrite(PS_GREEN_PIN, HIGH);
+				digitalWrite(PS_GRN_PIN, HIGH);
 			else
-				digitalWrite(PS_GREEN_PIN, LOW);
+				digitalWrite(PS_GRN_PIN, LOW);
 		}
 	}
 }
