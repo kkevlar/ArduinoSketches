@@ -4,15 +4,15 @@
  *  through be pressing a pushbutton on the breadboard.
  *  
  *  The five states (0,1,2,3,4) are:
- *    -State 0: All the lights are off
- *    -State 1: All the lights are on
+ *    -State 0: All the lights are on
+ *    -State 1: All the lights are off
  *    -State 2: The lights alternate on and off each second
  *    -State 3: The lights count in binary, incrementing by one each half-second
  *    -State 4: The lights signal "SOS" in morse code
  *    
  *  The arduino should be set up with the following hardware:
- *    - Five LEDs should be hooked to digital pins 4-8
- *    - A pushbutton should toggle input to digital pin 2
+ *    - Five LEDs should be hooked to digital pins 6-10
+ *    - A pushbutton should toggle input to digital pin 12
  *    	> Using a pull-up or pull-down resistor circuit
  */
 const int SWITCH_PIN = 12;
@@ -29,7 +29,7 @@ boolean state2FlashState = false;
 
 void setup()
 {
-	pinMode(SWITCH_PIN, INPUT);
+	pinMode(SWITCH_PIN, INPUT_PULLUP);
 	for(int i = 0; i < NO_LEDS; i++)
 		pinMode((FIRST_LED_PIN + i), OUTPUT);
 
@@ -45,10 +45,10 @@ void loop()
 	int mod = pressCount % 5;
 	if(fLP == true && mod == 0)
 		for(int i = 0; i < NO_LEDS; i++)
-			digitalWrite((FIRST_LED_PIN + i), HIGH);
+			digitalWrite((FIRST_LED_PIN + i), LOW);
 	if(fLP == true && mod == 1)
 		for(int i = 0; i < NO_LEDS; i++)
-			digitalWrite((FIRST_LED_PIN + i), LOW);
+			digitalWrite((FIRST_LED_PIN + i), HIGH);
 	if((mod == 2 || mod == 3 || mod == 4) && 
 			fLP == true)
 	{
@@ -73,8 +73,11 @@ void loop()
 	}
 	if(mod == 3)
 	{
+    float num = (pressCount -3)/5;
+    float power = pow(2,-num);
+    float divv = 1000 * power;
 		float count =
-				(millis() - stateStartTime) / 500; 
+				(millis() - stateStartTime) / divv; 
 		for (int i = 0; i < NO_LEDS; i++)
 		{
 			float inverse = NO_LEDS-(i+1);
@@ -92,7 +95,7 @@ void loop()
 	if(mod == 4)
 	{
 		float timePassed = (millis() - stateStartTime);
-		float count = timePassed / 300;
+		float count = timePassed / 200;
 		int intCount = (int) count;
 		int sosMod = (intCount % 37)+1;
 		if(sosMod <= 5 ||
