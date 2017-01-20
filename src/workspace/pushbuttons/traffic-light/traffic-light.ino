@@ -109,7 +109,7 @@ void loop()
 {
 	//The switch press function tests for button state changes
 	switchPressTester();
-  //secondarySwitchPressTester();
+	//secondarySwitchPressTester();
 	/* First Control Block:
 	 *   Tests to see if the button was pressed and the sequence
 	 *   still hasn't started. If so, it starts the sequence.
@@ -274,13 +274,13 @@ void switchPressTester()
 	 */
 	long time = millis();
 	int newState = readSwitchState(); 
-  if(redButtonState == LOW && time - redChangeTime > 2000)
-  {
-    reset();  
-    redChangeTime = time;
-    redButtonState = newState;
-    return;
-  }
+	if(redButtonState == LOW && time - redChangeTime > 2000)
+	{
+		reset();
+		redChangeTime = time;
+		redButtonState = newState;
+		return;
+	}
 	if (newState == redButtonState)
 		return;
 
