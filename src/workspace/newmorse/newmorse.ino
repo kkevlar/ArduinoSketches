@@ -12,9 +12,12 @@ const byte PIN_LEDS[] = {5,4,3,2};
 
 long buttonChangeTimes[sizeof(PIN_BUTTONS)];
 int buttonStates[sizeof(PIN_BUTTONS)];
-int ledCounts[sizeof(PIN_BUTTONS)];
+//int ledCounts[sizeof(PIN_BUTTONS)];
 boolean shouldChangeLeds;
-
+byte morse[5];
+boolean shouldFlash;
+int progress = 0;
+long timeStarted;
 void setup()
 {
 	for(int i = 0; i < sizeof(PIN_BUTTONS); i++)
@@ -30,25 +33,72 @@ void initialize()
 	digitalWrite(13,LOW);
 }
 
+
 void loop()
 {
 	switchPressTester();
-	if(!shouldChangeLeds)
+	if(!shouldChangeLeds && !shouldFlash)
 		return;
-	for(int i = 0; i < sizeof(PIN_LEDS); i++)
+	if(shouldFlash)
 	{
-		int state = LOW;
-		if(ledCounts[i]%2 == 1)
-			state = HIGH;
-		digitalWrite(PIN_LEDS[i],state);
+		progress = -1;
+		shouldChangeLeds = true;
+		timeStarted = millis();
+		shouldFlash = false;
 	}
-	shouldChangeLeds = false;
+	if(sizeof(morse) <= 0)
+		digitalWrite(PIN_LEDS[COLOR_BLUE], HIGH);
+	else
+		digitalWrite(PIN_LEDS[COLOR_BLUE], LOW);
+	if(millis() - timeStarted > 1000)
+		progress++;
+	else
+		return;
+	if(progress >= 0)
+	{
+		if(progress > sizeof(morse[0]))
+		{
+			shouldFlash = false;
+			shouldChangeLeds = false;
+			digitalWrite(PIN_LEDS[COLOR_YELLOW], HIGH);
+		}
+	byte letter = morse[progress];
+    if (letter == 1 || letter == 2)
+		digitalWrite(PIN_LEDS[COLOR_RED], HIGH);
+    else
+    digitalWrite(PIN_LEDS[COLOR_RED],LOW);
+		if(letter == 1)
+			digitalWrite(PIN_LEDS[COLOR_GREEN], HIGH);
+		else
+			digitalWrite(PIN_LEDS[COLOR_GREEN], LOW);
+	}
+
+}
+
+
+void addToWord(byte letter)
+{
+	byte newWord[] = {letter};
+	if (sizeof(morse)!=0)
+	{
+		newWord[sizeof(morse)+1];
+		for(int i =0; i < sizeof(newWord); i++)
+		{
+			newWord[i] = morse[i];
+		}
+   newWord[sizeof(morse)] = letter;
+	}
+	morse = newWord;
 }
 
 void buttonPressed(byte color)
 {
-	ledCounts[color]++;
-	shouldChangeLeds = true;
+	if(color == COLOR_RED)
+		addToWord(2);
+	if(color == COLOR_GREEN)
+		addToWord(1);
+	if(color == COLOR_YELLOW)
+		shouldFlash == true;
 }
 
 void switchPressTester()
@@ -58,7 +108,7 @@ void switchPressTester()
 	for(int i = 0; i < sizeof(PIN_BUTTONS); i++)
 	{
 		int newState = digitalRead(PIN_BUTTONS[i]);
-   
+
 		/*
 		if(redButtonState == LOW && time - redChangeTime > 2000)
 		{
@@ -67,11 +117,11 @@ void switchPressTester()
 			redButtonState = newState;
 			return;
 		}
-		*/
-   
+		 */
+
 		if(newState == buttonStates[i])
 			continue;
-    
+
 		if(buttonStates[i] == HIGH && time - buttonChangeTimes[i] > DWN_TIME)
 			buttonPressed(COLOR_SEQUENCE[i]);
 
