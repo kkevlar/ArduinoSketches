@@ -8,12 +8,14 @@ int direction = 1; // The variable controlling the direction of the sequence of 
 int currentLED = 0; // The variable that governs which LED is on at any given moment, initially = 0.
 unsigned long changeTime; // The variable used to check if enough time has passed to change LED's.
 void setup() {
+  
   for (int x=0; x<10; x++) { // sets all pins to OUTPUT
  pinMode(ledPin[x], OUTPUT);
  }
  changeTime = millis(); // Initializes the variable to the time that has passed
 }
 void loop() {
+  ledDelay = analogRead(2);
  if ((millis() - changeTime) > ledDelay) { // if it has been ledDelay ms since last change
  changeLED(); // called the procedure we define below called "changeLED"
  changeTime = millis(); // alters the value of changeTime to the current elapsed time -- a reset
