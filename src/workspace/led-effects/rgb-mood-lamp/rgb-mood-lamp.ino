@@ -42,17 +42,17 @@ void setup()
 void loop()
 {
    
-    for (int x = 0; x < 360; x++)
+    for (int x = 0; x < 3600; x++)
     {
         int colors[3];
-        getRGB(x,255,255,colors);
+        getRGB(int(x/10),255,255,colors);
         int red = dim_curve[(colors[0])];
         int green = dim_curve[(colors[1])];
         int blue = dim_curve[(colors[2])];
         analogWrite(PIN_RED, red);
         analogWrite(PIN_GRN, green);
         analogWrite(PIN_BLU, blue);
-        delay(50);
+        delay(10);
     }
    
    
