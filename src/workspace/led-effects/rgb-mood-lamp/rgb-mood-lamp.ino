@@ -22,19 +22,28 @@ void setup()
     goalRGB[0] = 255;
     goalRGB[1] = 0;
     goalRGB[2] = 0;
+    for(int i = 0; i <= 255; i+=5)
+    {
+       Serial.print(i);
+       Serial.print(" --> ");
+       Serial.println(logmatize(i));
+    }  
 }
 void loop()
 {
     randomSeed(analogRead(0));
     for (int i = 0; i < 3; i++)
     {
-        increment[i] = (goalRGB[i] - currentRGB[i]) / 1000;
+        increment[i] = (goalRGB[i] - currentRGB[i]) / 3000 ;
+        if(random(8) == 2)
+          increment[i] = 0;
     }
-    for (int x = 0; x < 1000; x++)
+    for (int x = 0; x < 3000; x++)
     {
-        int red = int(currentRGB[0]);
-        int green = int(currentRGB[1]);
-        int blue = int(currentRGB[2]);
+  
+        int red = logmatize(currentRGB[0]);
+        int green = logmatize(currentRGB[1]);
+        int blue = logmatize(currentRGB[2]);
         analogWrite(PIN_RED, red);
         analogWrite(PIN_GRN, green);
         analogWrite(PIN_BLU, blue);
@@ -43,25 +52,29 @@ void loop()
         currentRGB[1] += increment[1];
         currentRGB[2] += increment[2];
     }
-    
-      
-    delay(400);
-    int dark = random(3);
+    //for(int i = 0; i < 3; i++)
+    // goalRGB[i] = 0;
+     
+    delay(800);
+    int total = 0;
+    while(total < 240 || total > 550)
+    {
+    total = 0;
     for (int x = 0; x < 3; x++) 
     {
-        int num = random(256);
-       // float diff = abs(goalRGB[x] - num);
-        //if(diff < ((100/2)-10) || (random(100) > 90  && num > 100))
-        //{
-         // x--;
-         // continue;
-       // }
-       if(x == dark && x!=0)
-        goalRGB[x] = 0;
-        else
+        int num = random(556)-100;
+        if(random(7)==1)
+          num = 0;
+        num = constrain(num,0,255);
         goalRGB[x] = num;
-        ///total += num;
-    
+        total +=  num;  
+    }
     }
    
 }
+int logmatize(float num)
+{
+  return constrain(255-int( ( (log(255-num) - 1) / (log(255)-1) ) * 255),0,255);
+  //return constrain(int(pow(num,.5)*(255/pow(255,.5))),0,255);
+}
+
