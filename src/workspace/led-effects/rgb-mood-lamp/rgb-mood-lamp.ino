@@ -2,9 +2,25 @@ const int PIN_RED = 9;
 const int PIN_GRN = 10;
 const int PIN_BLU = 11;
 
-float currentRGB[3];
-float goalRGB[3];
-float increment[3];
+const byte dim_curve[] = {
+    0,   1,   1,   2,   2,   2,   2,   2,   2,   3,   3,   3,   3,   3,   3,   3,
+    3,   3,   3,   3,   3,   3,   3,   4,   4,   4,   4,   4,   4,   4,   4,   4,
+    4,   4,   4,   5,   5,   5,   5,   5,   5,   5,   5,   5,   5,   6,   6,   6,
+    6,   6,   6,   6,   6,   7,   7,   7,   7,   7,   7,   7,   8,   8,   8,   8,
+    8,   8,   9,   9,   9,   9,   9,   9,   10,  10,  10,  10,  10,  11,  11,  11,
+    11,  11,  12,  12,  12,  12,  12,  13,  13,  13,  13,  14,  14,  14,  14,  15,
+    15,  15,  16,  16,  16,  16,  17,  17,  17,  18,  18,  18,  19,  19,  19,  20,
+    20,  20,  21,  21,  22,  22,  22,  23,  23,  24,  24,  25,  25,  25,  26,  26,
+    27,  27,  28,  28,  29,  29,  30,  30,  31,  32,  32,  33,  33,  34,  35,  35,
+    36,  36,  37,  38,  38,  39,  40,  40,  41,  42,  43,  43,  44,  45,  46,  47,
+    48,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,
+    63,  64,  65,  66,  68,  69,  70,  71,  73,  74,  75,  76,  78,  79,  81,  82,
+    83,  85,  86,  88,  90,  91,  93,  94,  96,  98,  99,  101, 103, 105, 107, 109,
+    110, 112, 114, 116, 118, 121, 123, 125, 127, 129, 132, 134, 136, 139, 141, 144,
+    146, 149, 151, 154, 157, 159, 162, 165, 168, 171, 174, 177, 180, 183, 186, 190,
+    193, 196, 200, 203, 207, 211, 214, 218, 222, 226, 230, 234, 238, 242, 248, 255,
+};
+
 void setup()
 {
     pinMode(5,OUTPUT);
@@ -16,12 +32,6 @@ void setup()
     Serial.begin(9600);
     randomSeed(analogRead(0));
 
-    currentRGB[0] = 255;
-    currentRGB[1] = 200;
-    currentRGB[2] = 0;
-    goalRGB[0] = 255;
-    goalRGB[1] = 100;
-    goalRGB[2] = 0;
     for(int i = 0; i <= 255; i+=5)
     {
        Serial.print(i);
@@ -31,69 +41,20 @@ void setup()
 }
 void loop()
 {
-    randomSeed(analogRead(0));
-    for (int i = 0; i < 3; i++)
+   
+    for (int x = 0; x < 360; x++)
     {
-        increment[i] = (goalRGB[i] - currentRGB[i]) / 3000 ;
-    }
-    int bank = 0;
-    for (int x = 0; x < 3000; x++)
-    {
-        int red = logmatize(currentRGB[0]);
-        int green = logmatize(currentRGB[1]);
-        int blue = logmatize(currentRGB[2]);
+        int colors[3];
+        getRGB(x,255,255,colors);
+        int red = dim_curve[(colors[0])];
+        int green = dim_curve[(colors[1])];
+        int blue = dim_curve[(colors[2])];
         analogWrite(PIN_RED, red);
         analogWrite(PIN_GRN, green);
         analogWrite(PIN_BLU, blue);
-        delay(1);
-        if(x > 1000 && x < 2000 && random(100) < 30)
-        {
-            bank++;
-            currentRGB[0] += increment[0];
-           currentRGB[1] += increment[1];
-            currentRGB[2] += increment[2];
-        }
-        if(bank > 0 && x > 2000 && random(100)>((3000-x)/10))
-        {
-          bank--;
-          continue;
-        }
-        currentRGB[0] += increment[0];
-        currentRGB[1] += increment[1];
-        currentRGB[2] += increment[2];
+        delay(50);
     }
-    //for(int i = 0; i < 3; i++)
-    // goalRGB[i] = 0;
-     
-    delay(300);
-    int total = 0;
-    int want = random(4) + 1;
-    if(want == 3 && random(100) > 20)
-      want = random(2)+1;
-    if(want == 4 && random(100) > 50)
-      want = random(2)+1;
-    if(want == 4)
-    {
-       for (int x = 0; x < 3; x++) 
-      {
-        int num = random(255+50)-25;
-        num = constrain(num,0,255);
-        goalRGB[x] = num;
-       }
-       return;
-    }
-    while(total != want)
-    {
-    total = 0;
-    for (int x = 0; x < 3; x++) 
-    {
-        int num = random(2)*255;
-        num = constrain(num,0,255);
-        goalRGB[x] = num;
-        if(num > 0)
-        total++;
-    }
-    }
+   
    
 }
 int logmatize(float num)
@@ -101,59 +62,69 @@ int logmatize(float num)
   return constrain(255-int( ( (log(255-num) - 1) / (log(255)-1) ) * 255),0,255);
   //return constrain(int(pow(num,.5)*(255/pow(255,.5))),0,255);
 }
-void HSV_to_RGB(float h, float s, float v, byte *r, byte *g, byte *b)
-{
-  int i,f,p,q,t;
-  
-  h = max(0.0, min(360.0, h));
-  s = max(0.0, min(100.0, s));
-  v = max(0.0, min(100.0, v));
-  
-  s /= 100;
-  v /= 100;
-  
-  if(s == 0) {
-    // Achromatic (grey)
-    *r = *g = *b = round(v*255);
-    return;
-  }
-
-  h /= 60; // sector 0 to 5
-  i = floor(h);
-  f = h - i; // factorial part of h
-  p = v * (1 - s);
-  q = v * (1 - s * f);
-  t = v * (1 - s * (1 - f));
-  switch(i) {
-    case 0:
-      *r = round(255*v);
-      *g = round(255*t);
-      *b = round(255*p);
-      break;
-    case 1:
-      *r = round(255*q);
-      *g = round(255*v);
-      *b = round(255*p);
-      break;
-    case 2:
-      *r = round(255*p);
-      *g = round(255*v);
-      *b = round(255*t);
-      break;
-    case 3:
-      *r = round(255*p);
-      *g = round(255*q);
-      *b = round(255*v);
-      break;
-    case 4:
-      *r = round(255*t);
-      *g = round(255*p);
-      *b = round(255*v);
-      break;
-    default: // case 5:
-      *r = round(255*v);
-      *g = round(255*p);
-      *b = round(255*q);
+void getRGB(int hue, int sat, int val, int colors[3]) { 
+  /* convert hue, saturation and brightness ( HSB/HSV ) to RGB
+     The dim_curve is used only on brightness/value and on saturation (inverted).
+     This looks the most natural.      
+  */
+ 
+//  val = dim_curve[val];
+//  sat = 255-dim_curve[255-sat];
+ 
+  int r;
+  int g;
+  int b;
+  int base;
+ 
+  if (sat == 0) { // Acromatic color (gray). Hue doesn't mind.
+    colors[0]=val;
+    colors[1]=val;
+    colors[2]=val;  
+  } else  { 
+ 
+    base = ((255 - sat) * val)>>8;
+ 
+    switch(hue/60) {
+  case 0:
+    r = val;
+    g = (((val-base)*hue)/60)+base;
+    b = base;
+  break;
+ 
+  case 1:
+    r = (((val-base)*(60-(hue%60)))/60)+base;
+    g = val;
+    b = base;
+  break;
+ 
+  case 2:
+    r = base;
+    g = val;
+    b = (((val-base)*(hue%60))/60)+base;
+  break;
+ 
+  case 3:
+    r = base;
+    g = (((val-base)*(60-(hue%60)))/60)+base;
+    b = val;
+  break;
+ 
+  case 4:
+    r = (((val-base)*(hue%60))/60)+base;
+    g = base;
+    b = val;
+  break;
+ 
+  case 5:
+    r = val;
+    g = base;
+    b = (((val-base)*(60-(hue%60)))/60)+base;
+  break;
     }
+ 
+    colors[0]=r;
+    colors[1]=g;
+    colors[2]=b; 
+  }   
 }
 
