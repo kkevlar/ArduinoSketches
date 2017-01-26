@@ -1,46 +1,67 @@
 const int PIN_RED = 9;
-const int PIN_GRN = 8;
-const int PIN_BLU = 10;
+const int PIN_GRN = 10;
+const int PIN_BLU = 11;
 
-float RGB1[3];
-float RGB2[3];
-float INC[3];
+float currentRGB[3];
+float goalRGB[3];
+float increment[3];
 void setup()
 {
+    pinMode(5,OUTPUT);
+    pinMode(6,OUTPUT);
+    pinMode(PIN_RED,OUTPUT);
+    pinMode(PIN_GRN,OUTPUT);
+    pinMode(PIN_BLU,OUTPUT);
+    pinMode(13,OUTPUT);
     Serial.begin(9600);
     randomSeed(analogRead(0));
 
-    RGB1[0] = 0;
-    RGB1[1] = 0;
-    RGB1[2] = 0;
-    RGB2[0] = random(256);
-    RGB2[1] = random(256);
-    RGB2[2] = random(256);
+    currentRGB[0] = 0;
+    currentRGB[1] = 0;
+    currentRGB[2] = 255;
+    goalRGB[0] = 255;
+    goalRGB[1] = 0;
+    goalRGB[2] = 0;
 }
 void loop()
 {
     randomSeed(analogRead(0));
-    for (int x = 0; x < 3; x++) 
+    for (int i = 0; i < 3; i++)
     {
-        INC[x] = (RGB1[x] - RGB2[x]);
+        increment[i] = (goalRGB[i] - currentRGB[i]) / 1000;
     }
-    for (int x = 0; x < 256; x++)
+    for (int x = 0; x < 1000; x++)
     {
-        int red = int(RGB1[0]);
-        int green = int(RGB1[1]);
-        int blue = int(RGB1[2]);
+        int red = int(currentRGB[0]);
+        int green = int(currentRGB[1]);
+        int blue = int(currentRGB[2]);
         analogWrite(PIN_RED, red);
         analogWrite(PIN_GRN, green);
         analogWrite(PIN_BLU, blue);
-        delay(100);
-        RGB1[0] -= INC[0];
-        RGB1[1] -= INC[1];
-        RGB1[2] -= INC[2];
+        delay(1);
+        currentRGB[0] += increment[0];
+        currentRGB[1] += increment[1];
+        currentRGB[2] += increment[2];
     }
+    
+      
+    delay(400);
+    int dark = random(3);
     for (int x = 0; x < 3; x++) 
     {
-        RGB2[x] = random(556) - 300;
-        RGB2[x] = constrain(RGB2[x], 0, 255);
-        delay(1000);
+        int num = random(256);
+       // float diff = abs(goalRGB[x] - num);
+        //if(diff < ((100/2)-10) || (random(100) > 90  && num > 100))
+        //{
+         // x--;
+         // continue;
+       // }
+       if(x == dark && x!=0)
+        goalRGB[x] = 0;
+        else
+        goalRGB[x] = num;
+        ///total += num;
+    
     }
+   
 }
