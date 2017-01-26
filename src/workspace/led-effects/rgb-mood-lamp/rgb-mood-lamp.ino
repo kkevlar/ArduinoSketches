@@ -1,10 +1,10 @@
+const int PIN_RED = 9;
+const int PIN_GRN = 8;
+const int PIN_BLU = 10;
+
 float RGB1[3];
 float RGB2[3];
 float INC[3];
-int red, green, blue;
-int RedPin = 9;
-int GreenPin = 8;
-int BluePin = 10;
 void setup()
 {
     Serial.begin(9600);
@@ -22,16 +22,16 @@ void loop()
     randomSeed(analogRead(0));
     for (int x = 0; x < 3; x++) 
     {
-        INC[x] = (RGB1[x] - RGB2[x])
+        INC[x] = (RGB1[x] - RGB2[x]);
     }
     for (int x = 0; x < 256; x++)
     {
-        red = int(RGB1[0]);
-        green = int(RGB1[1]);
-        blue = int(RGB1[2]);
-        analogWrite(RedPin, red);
-        analogWrite(GreenPin, green);
-        analogWrite(BluePin, blue);
+        int red = int(RGB1[0]);
+        int green = int(RGB1[1]);
+        int blue = int(RGB1[2]);
+        analogWrite(PIN_RED, red);
+        analogWrite(PIN_GRN, green);
+        analogWrite(PIN_BLU, blue);
         delay(100);
         RGB1[0] -= INC[0];
         RGB1[1] -= INC[1];
