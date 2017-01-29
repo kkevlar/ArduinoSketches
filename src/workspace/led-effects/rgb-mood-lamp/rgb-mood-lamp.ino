@@ -29,19 +29,19 @@ void setup()
     pinMode(PIN_GRN,OUTPUT);
     pinMode(PIN_BLU,OUTPUT);
     pinMode(13,OUTPUT);
-    Serial.begin(9600);
+    //Serial.begin(9600);
     randomSeed(analogRead(0));
 
-    for(int i = 0; i <= 255; i+=5)
-    {
-       Serial.print(i);
-       Serial.print(" --> ");
-       Serial.println(logmatize(i));
-    }  
+   // for(int i = 0; i <= 255; i+=5)
+   // {
+  ///     Serial.print(i);
+   //    Serial.print(" --> ");
+  //     Serial.println(logmatize(i));
+   // }  
 }
 void loop()
 {
-   
+   boolean dont = false;
     for (int x = 0; x < 3600; x++)
     {
         int colors[3];
@@ -52,7 +52,22 @@ void loop()
         analogWrite(PIN_RED, red);
         analogWrite(PIN_GRN, green);
         analogWrite(PIN_BLU, blue);
-        delay(10);
+
+        if(40*10 < x && 65*10 > x && !dont)
+        {
+          int diff = int(sqrt(abs(x-55*10)));
+          diff += 0;
+          if(x % diff == 1)
+          {
+          x--;
+          dont = true;
+          }
+          else
+          dont = false;
+        }
+        else
+          dont = false;
+        delay(5);
     }
    
    
