@@ -21,14 +21,16 @@ const byte dim_curve[] = {
     193, 196, 200, 203, 207, 211, 214, 218, 222, 226, 230, 234, 238, 242, 248, 255,
 };
 
+int brightness = 255;
 void setup()
 {
-    pinMode(5,OUTPUT);
-    pinMode(6,OUTPUT);
+    
     pinMode(PIN_RED,OUTPUT);
     pinMode(PIN_GRN,OUTPUT);
     pinMode(PIN_BLU,OUTPUT);
+    pinMode(A1,INPUT);
     pinMode(13,OUTPUT);
+    
     //Serial.begin(9600);
     randomSeed(analogRead(0));
 
@@ -42,10 +44,13 @@ void setup()
 void loop()
 {
    boolean dont = false;
+   
     for (int x = 0; x < 3600; x++)
     {
         int colors[3];
-        getRGB(int(x/10),255,255,colors);
+        if(analogRead(A1) > 500)
+          brightness = 0;
+        getRGB(int(x/10),255,brightness,colors);
         int red = dim_curve[(colors[0])];
         int green = dim_curve[(colors[1])];
         int blue = dim_curve[(colors[2])];
