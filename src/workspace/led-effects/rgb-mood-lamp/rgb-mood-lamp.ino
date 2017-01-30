@@ -66,7 +66,7 @@ void loop()
         }
         else
             dont = false;
-        delay(5);
+        delay(10);
     }
 }
 void doPhotocellThings()
