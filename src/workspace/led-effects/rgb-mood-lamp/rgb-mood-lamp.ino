@@ -34,8 +34,6 @@ void setup()
     pinMode(PIN_BLU, OUTPUT);
     pinMode(A1, INPUT);
     pinMode(13, OUTPUT);
-
-    randomSeed(analogRead(0));
 }
 void loop()
 {
@@ -44,7 +42,7 @@ void loop()
     for (int x = 0; x < 3600; x++) {
         int colors[3];
 
-       doPhotocellThings();
+        doPhotocellThings();
 
         getRGB(int(x / 10), 255, brightness, colors);
         int red = dim_curve[(colors[0])];
@@ -71,41 +69,37 @@ void loop()
 }
 void doPhotocellThings()
 {
-  if(millis() < 2000)
-  {
-    if(calibrateCount == 0)
-    calibration = analogRead(A1);
+    if (millis() < 2000) {
+        if (calibrateCount == 0)
+            calibration = analogRead(A1);
+        else
+            calibration *= (calibrateCount / (calibrateCount + 1));
+        calibration += analogRead(A1) / (calibrateCount + 1);
+        calibrateCount++;
+        return;
+    }
+    int newPhoto;
+    int photoVal = analogRead(A1);
+    if (photoVal > calibration + 75)
+        newPhoto = 1;
     else
-    calibration *= (calibrateCount/(calibrateCount+1));
-    calibration += analogRead(A1)/(calibrateCount+1);
-    calibrateCount++;
-    return; 
-  }
-  int newPhoto;
-  int photoVal = analogRead(A1);
-  if(photoVal > calibration+75 )
-  newPhoto = 1;
-  else
-  newPhoto = 0;
+        newPhoto = 0;
 
-  if(newPhoto == photoOn)
-     return;
+    if (newPhoto == photoOn)
+        return;
 
-  if(photoOn == 0 && millis() - stateChangeTime > 200)
-  {
-    photoOn = 1;
-    stateChangeTime = millis();
-    if(brightness == 0)
-    brightness = 255;
-    else
-    brightness = 0;
-  }
-  else if (photoOn == 1 && millis() - stateChangeTime > 200)
-  {
-    photoOn = 0;
-    stateChangeTime = millis();
-    
-  }
+    if (photoOn == 0 && millis() - stateChangeTime > 200) {
+        photoOn = 1;
+        stateChangeTime = millis();
+        if (brightness == 0)
+            brightness = 255;
+        else
+            brightness = 0;
+    }
+    else if (photoOn == 1 && millis() - stateChangeTime > 200) {
+        photoOn = 0;
+        stateChangeTime = millis();
+    }
 }
 void getRGB(int hue, int sat, int val, int colors[3])
 {
