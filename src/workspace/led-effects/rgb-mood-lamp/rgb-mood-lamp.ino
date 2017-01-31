@@ -26,6 +26,10 @@ long stateChangeTime = 0;
 int photoOn = 0;
 float calibrateCount = 0;
 float calibration = 0;
+int triggercount = 0;
+byte RED_PRESETS = {255};
+byte GREEN_PRESETS = {0};
+byte BLUE_PRESETS = {0};
 void setup()
 {
 
@@ -51,20 +55,8 @@ void loop()
         analogWrite(PIN_RED, red);
         analogWrite(PIN_GRN, green);
         analogWrite(PIN_BLU, blue);
-
-        if (40 * 10 < x && 65 * 10 > x && !dont) {
-            int diff = int(sqrt(abs(x - 55 * 10)));
-            diff += 0;
-            if (x % diff == 1) {
-                x--;
-                dont = true;
-            }
-            else
-                dont = false;
-        }
-        else
-            dont = false;
-        delay(10);
+        
+        delay(15);
     }
 }
 void doPhotocellThings()
@@ -88,15 +80,12 @@ void doPhotocellThings()
     if (newPhoto == photoOn)
         return;
 
-    if (photoOn == 0 && millis() - stateChangeTime > 200) {
+    if (photoOn == 0 && millis() - stateChangeTime > 100) {
         photoOn = 1;
         stateChangeTime = millis();
-        if (brightness == 0)
-            brightness = 255;
-        else
-            brightness = 0;
+        triggercount++;
     }
-    else if (photoOn == 1 && millis() - stateChangeTime > 200) {
+    else if (photoOn == 1 && millis() - stateChangeTime > 100) {
         photoOn = 0;
         stateChangeTime = millis();
     }
