@@ -25,6 +25,7 @@ long buttonChangeTimes[sizeof(PIN_BUTTONS)];
 int buttonStates[sizeof(PIN_BUTTONS)];
 unsigned char lastMorse = 0;
 unsigned char currMorse = 0;
+unsigned char oldMorse = 0;
 
 const unsigned char letters[] = {
 		/*A*/B01001000,
@@ -162,6 +163,7 @@ void printTimes(int state, int timeMillis)
       unit = now/unitLength;
       if(unit > 1.75)
       {
+        oldMorse = lastMorse;
         lastMorse = currMorse;
         currMorse = 0;
       }
@@ -180,18 +182,24 @@ void printTimes(int state, int timeMillis)
      else
          if(unit > 1.75)
           {
+            oldMorse = lastMorse;
         lastMorse = currMorse;
         currMorse = 0;
           }
+            char oldMorseLetter = 0;  
     char lastMorseLetter = 0;  
     char currMorseLetter = 0;
     for (int i = 0; i < sizeof(letters); i++)
     {
+      if(oldMorse == letters[i])
+        oldMorseLetter = 65+i;
       if(lastMorse == letters[i])
         lastMorseLetter = 65+i;
         if(currMorse == letters[i])
         currMorseLetter = 65+i;
     }
+      Serial.print("ancient ");
+    Serial.println(oldMorseLetter);
     Serial.print("lastmorse ");
     Serial.println(lastMorseLetter);
     Serial.print("currmorse ");
