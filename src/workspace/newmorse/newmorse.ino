@@ -14,13 +14,16 @@ int calibrateCount =0;
 float calibration = 0;
 
 byte photoCellHitCount = 0;
-int upTimes[3] = {0,0,0};
-int downTimes[3] = {0,0,0};
+int upTimes[] =   {0,0,0,0,0};
+int downTimes[]=  {0,0,0,0,0};
 long photoStateChangeTime = 0;
 byte photoOn = 0;
-
+boolean dealtWith = false;
+  float unitLength = 0;
+  
 long buttonChangeTimes[sizeof(PIN_BUTTONS)];
 int buttonStates[sizeof(PIN_BUTTONS)];
+unsigned char lastMorse = 0;
 unsigned char currMorse = 0;
 
 const unsigned char letters[] = {
@@ -102,12 +105,15 @@ void loop()
 	delay(25);
 }
 
-void printTimes()
+void printTimes(int state, int timeMillis)
 {
-  Serial.print("Uptimes  : [");
+    Serial.print("Uptimes  : [");
+    float shortestUp = upTimes[0];
     for(int i = 0; i < sizeof(upTimes)/sizeof(int); i++)
     {
       Serial.print(upTimes[i]);
+      if(upTimes[i] < shortestUp)
+        shortestUp = upTimes[i];
       if(i+1 < sizeof(upTimes)/sizeof(int))
         Serial.print(",");
     }
@@ -120,6 +126,76 @@ void printTimes()
         Serial.print(",");
     }
     Serial.println("]");
+
+    Serial.print("Uptimes  : [");
+    for(int i = 0; i < sizeof(upTimes)/sizeof(int); i++)
+    {
+      float now = upTimes[i];
+      Serial.print(round(now/shortestUp));
+      if(i+1 < sizeof(upTimes)/sizeof(int))
+        Serial.print(",");
+    }
+    Serial.println("]");
+    Serial.print("Downtimes: [");
+    for(int i = 0; i < sizeof(downTimes)/sizeof(int); i++)
+    {
+      float now = downTimes[i];
+      Serial.print(round(now/shortestUp));
+      if(i+1 < sizeof(downTimes)/sizeof(int))
+        Serial.print(",");
+    }
+    Serial.println("]");
+    unitLength = shortestUp;
+    if(dealtWith == false)
+    { 
+      for(int i = 0; i < sizeof(upTimes)/sizeof(int); i++)
+      {
+      float now = upTimes[i];
+      float unit = now/unitLength;
+      if(unit < 1.75)
+        buttonPressed(COLOR_RED);
+      else
+        buttonPressed(COLOR_BLUE);
+        if (i+1 < sizeof(upTimes)/sizeof(int))
+        {
+      now = downTimes[i+1];
+      unit = now/unitLength;
+      if(unit > 1.75)
+      {
+        lastMorse = currMorse;
+        currMorse = 0;
+      }
+        }
+    }
+      
+      dealtWith = true;
+    }
+     float now = timeMillis;
+     float unit = now/unitLength;
+     if(state == 1)
+      if(unit < 1.75)
+        buttonPressed(COLOR_RED);
+      else
+        buttonPressed(COLOR_BLUE);
+     else
+         if(unit > 1.75)
+          {
+        lastMorse = currMorse;
+        currMorse = 0;
+          }
+    char lastMorseLetter = 0;  
+    char currMorseLetter = 0;
+    for (int i = 0; i < sizeof(letters); i++)
+    {
+      if(lastMorse == letters[i])
+        lastMorseLetter = 65+i;
+        if(currMorse == letters[i])
+        currMorseLetter = 65+i;
+    }
+    Serial.print("lastmorse ");
+    Serial.println(lastMorseLetter);
+    Serial.print("currmorse ");
+    Serial.println(currMorseLetter);
 }
 
 
@@ -184,33 +260,23 @@ void doPhotocellThings()
 	{
 		photoOn = 1;
 		int index = -1;
-     Serial.print("sizeof: ");
-    Serial.println(sizeof(upTimes)/sizeof(int));
-		for(int i = 0; i < sizeof(upTimes)/sizeof(int); i++)
+    
+		for(int i = 0; i < sizeof(downTimes)/sizeof(int); i++)
 		{
-    Serial.print("i: ");
-    Serial.print(i);
-    Serial.print("   uptimesi: ");
-     Serial.println((upTimes[i]));
-			if(!(upTimes[i] > 0))
+    
+			if(!(downTimes[i] > 0))
 			{
-      Serial.print("i: ");
-    Serial.print(i);
-    Serial.print("   uptimesi chosen: ");
-        Serial.println((upTimes[i]));
+      
 				index = i;
 				break;
 			}
 		}
-    Serial.print("index chose: ");
-   Serial.println(index);
+   
 		if(index >= 0)
-			upTimes[index] = millis() - photoStateChangeTime;
+		downTimes[index] = millis() - photoStateChangeTime;
      else
-     printTimes();
-    Serial.print("uptimes2: ");
-     Serial.println(upTimes[2]);
-     Serial.println();
+    printTimes(0,millis() - photoStateChangeTime);
+    
 		photoStateChangeTime = millis();
 	}
 	else if (newPhoto == 0 && millis() - photoStateChangeTime > 100)
@@ -218,18 +284,18 @@ void doPhotocellThings()
 
 		photoOn = 0;
 		int index = -1;
-		for(int i = 0; i < sizeof(downTimes)/sizeof(int); i++)
+		for(int i = 0; i < sizeof(upTimes)/sizeof(int); i++)
 		{
-			if(downTimes[i] == 0)
+			if(upTimes[i] == 0)
 			{
 				index = i;
 				break;
 			}
 		}
 		if(index >= 0)
-			downTimes[index] = millis() - photoStateChangeTime;
+			upTimes[index] = millis() - photoStateChangeTime;
      else
-     printTimes();
+     printTimes(1,millis() - photoStateChangeTime);
 		photoStateChangeTime = millis();
 	}
 }
