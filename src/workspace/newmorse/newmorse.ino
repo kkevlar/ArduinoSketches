@@ -2,24 +2,49 @@
 const int DWN_TIME = 50;
 
 const byte COLOR_RED = 0;
-const byte COLOR_GREEN = 1;
-const byte COLOR_YELLOW = 2;
-const byte COLOR_BLUE = 3;
-const byte COLOR_SEQUENCE[] = {COLOR_RED,COLOR_GREEN,COLOR_YELLOW,COLOR_BLUE};
+const byte COLOR_GREEN = 2;
+const byte COLOR_YELLOW = 3;
+const byte COLOR_BLUE = 1;
+const byte COLOR_SEQUENCE[] = {COLOR_RED,COLOR_BLUE, COLOR_GREEN,COLOR_YELLOW,COLOR_BLUE};
 
-const byte PIN_BUTTONS[] = {11,10,9,8};
-const byte PIN_LEDS[] = {5,4,3,2};
+const byte PIN_BUTTONS[] = {5,4,3,2};
+const byte PIN_LEDS[] = {11,10,9,8};
 
 long buttonChangeTimes[sizeof(PIN_BUTTONS)];
 int buttonStates[sizeof(PIN_BUTTONS)];
-//int ledCounts[sizeof(PIN_BUTTONS)];
-boolean shouldChangeLeds;
-byte morse[5];
-boolean shouldFlash;
-int progress = 0;
-long timeStarted;
+unsigned char currMorse = 0;
+
+const unsigned char letters[] = {
+		/*A*/B01001000,
+		/*B*/B10010000,
+		/*C*/B10010100,
+		/*D*/B01110000,
+		/*E*/B00110000,
+		/*F*/B10000100,
+		/*G*/B01111000,
+		/*H*/B10000000,
+		/*I*/B01000000,
+		/*J*/B10001110,
+		/*K*/B01110100,
+		/*L*/B10001000,
+		/*M*/B01011000,
+		/*N*/B01010000,
+		/*O*/B01111100,
+		/*P*/B10001100,
+		/*Q*/B10011010,
+		/*R*/B01101000,
+		/*S*/B01100000,
+		/*T*/B00110000,
+		/*U*/B01100100,
+		/*V*/B10000010,
+		/*W*/B01101100,
+		/*X*/B10010010,
+		/*Y*/B10010110,
+		/*Z*/B10011000
+};
 void setup()
 {
+	Serial.begin(9600);
 	for(int i = 0; i < sizeof(PIN_BUTTONS); i++)
 		pinMode(PIN_BUTTONS[i], INPUT);
 	for(int i = 0; i < sizeof(PIN_LEDS); i++)
@@ -30,75 +55,69 @@ void setup()
 
 void initialize()
 {
+	delay(100);
 	digitalWrite(13,LOW);
+	for(int x = 0; x < sizeof(letters); x++)
+	{
+		delay(50);
+		char character = 65+x;
+		int howLong = 0;
+
+    howLong = lengthOfMorse(letters[x]);
+		//length = (letters[x] >> (7)) & 1;
+		Serial.print(character);
+		Serial.print(" is length ");
+		Serial.println(howLong);
+	}
 }
 
-
+int lengthOfMorse(unsigned char letter)
+{
+  int howLong = 0;
+  for (int y = 0; y < 3; y++)
+    {
+      int bit = (letter >> (7-y)) & 1;
+      int exponent = 2-y;
+      howLong += (round(pow(2,exponent)) * bit);
+    }
+    return howLong;
+}
 void loop()
 {
 	switchPressTester();
-	if(!shouldChangeLeds && !shouldFlash)
-		return;
-	if(shouldFlash)
-	{
-		progress = -1;
-		shouldChangeLeds = true;
-		timeStarted = millis();
-		shouldFlash = false;
-	}
-	if(sizeof(morse) <= 0)
-		digitalWrite(PIN_LEDS[COLOR_BLUE], HIGH);
-	else
-		digitalWrite(PIN_LEDS[COLOR_BLUE], LOW);
-	if(millis() - timeStarted > 1000)
-		progress++;
-	else
-		return;
-	if(progress >= 0)
-	{
-		if(progress > sizeof(morse[0]))
-		{
-			shouldFlash = false;
-			shouldChangeLeds = false;
-			digitalWrite(PIN_LEDS[COLOR_YELLOW], HIGH);
-		}
-	byte letter = morse[progress];
-    if (letter == 1 || letter == 2)
-		digitalWrite(PIN_LEDS[COLOR_RED], HIGH);
-    else
-    digitalWrite(PIN_LEDS[COLOR_RED],LOW);
-		if(letter == 1)
-			digitalWrite(PIN_LEDS[COLOR_GREEN], HIGH);
-		else
-			digitalWrite(PIN_LEDS[COLOR_GREEN], LOW);
-	}
-
+  delay(25);
 }
 
-
-void addToWord(byte letter)
-{
-	byte newWord[] = {letter};
-	if (sizeof(morse)!=0)
-	{
-		newWord[sizeof(morse)+1];
-		for(int i =0; i < sizeof(newWord); i++)
-		{
-			newWord[i] = morse[i];
-		}
-   newWord[sizeof(morse)] = letter;
-	}
-	morse = newWord;
-}
 
 void buttonPressed(byte color)
 {
-	if(color == COLOR_RED)
-		addToWord(2);
-	if(color == COLOR_GREEN)
-		addToWord(1);
-	if(color == COLOR_YELLOW)
-		shouldFlash == true;
+  
+  int howLong = lengthOfMorse(currMorse);
+  howLong++;
+  byte bitToChange = 7-(howLong+2);
+  byte value = 0;
+  if(color == COLOR_BLUE)
+    value = 1;
+  currMorse ^= (-value ^ currMorse) & (1 << bitToChange);
+  for(int i = 0; i < 3; i++)
+  {
+    byte exponent = 2-i;
+    value = 0;
+    byte binNum = round(pow(2,exponent));
+    if(howLong >= binNum)
+    {
+      howLong -= binNum;
+      value = 1;
+    }
+    bitToChange = (7-i);
+    currMorse ^= (-value ^ currMorse) & (1 << bitToChange);
+  }
+  for(int i = 0; i < 8; i++)
+  {
+    int bit = (currMorse >> (7-i)) & 1;
+    Serial.print(bit);
+  }
+  Serial.println();
 }
 
 void switchPressTester()
@@ -118,10 +137,10 @@ void switchPressTester()
 			return;
 		}
 		 */
-
+ 
 		if(newState == buttonStates[i])
 			continue;
-
+     
 		if(buttonStates[i] == HIGH && time - buttonChangeTimes[i] > DWN_TIME)
 			buttonPressed(COLOR_SEQUENCE[i]);
 
