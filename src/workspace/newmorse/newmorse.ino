@@ -108,44 +108,16 @@ void loop()
 
 void printTimes(int state, int timeMillis)
 {
-    Serial.print("Uptimes  : [");
+    
     float shortestUp = upTimes[0];
     for(int i = 0; i < sizeof(upTimes)/sizeof(int); i++)
     {
-      Serial.print(upTimes[i]);
+    
       if(upTimes[i] < shortestUp)
         shortestUp = upTimes[i];
-      if(i+1 < sizeof(upTimes)/sizeof(int))
-        Serial.print(",");
+      
     }
-    Serial.println("]");
-    Serial.print("Downtimes: [");
-    for(int i = 0; i < sizeof(downTimes)/sizeof(int); i++)
-    {
-      Serial.print(downTimes[i]);
-      if(i+1 < sizeof(downTimes)/sizeof(int))
-        Serial.print(",");
-    }
-    Serial.println("]");
-
-    Serial.print("Uptimes  : [");
-    for(int i = 0; i < sizeof(upTimes)/sizeof(int); i++)
-    {
-      float now = upTimes[i];
-      Serial.print(round(now/shortestUp));
-      if(i+1 < sizeof(upTimes)/sizeof(int))
-        Serial.print(",");
-    }
-    Serial.println("]");
-    Serial.print("Downtimes: [");
-    for(int i = 0; i < sizeof(downTimes)/sizeof(int); i++)
-    {
-      float now = downTimes[i];
-      Serial.print(round(now/shortestUp));
-      if(i+1 < sizeof(downTimes)/sizeof(int))
-        Serial.print(",");
-    }
-    Serial.println("]");
+   
     unitLength = shortestUp;
     if(dealtWith == false)
     { 
@@ -153,7 +125,7 @@ void printTimes(int state, int timeMillis)
       {
       float now = upTimes[i];
       float unit = now/unitLength;
-      if(unit < 1.75)
+      if(unit <  1.8)
         buttonPressed(COLOR_RED);
       else
         buttonPressed(COLOR_BLUE);
@@ -161,7 +133,7 @@ void printTimes(int state, int timeMillis)
         {
       now = downTimes[i+1];
       unit = now/unitLength;
-      if(unit > 1.75)
+      if(unit > 1.8)
       {
         oldMorse = lastMorse;
         lastMorse = currMorse;
@@ -175,12 +147,12 @@ void printTimes(int state, int timeMillis)
      float now = timeMillis;
      float unit = now/unitLength;
      if(state == 1)
-      if(unit < 1.75)
+      if(unit < 1.8)
         buttonPressed(COLOR_RED);
       else
         buttonPressed(COLOR_BLUE);
      else
-         if(unit > 1.75)
+         if(unit > 1.8)
           {
             oldMorse = lastMorse;
         lastMorse = currMorse;
@@ -198,7 +170,7 @@ void printTimes(int state, int timeMillis)
         if(currMorse == letters[i])
         currMorseLetter = 65+i;
     }
-      Serial.print("ancient ");
+    Serial.print("ancient ");
     Serial.println(oldMorseLetter);
     Serial.print("lastmorse ");
     Serial.println(lastMorseLetter);
@@ -250,7 +222,7 @@ void doPhotocellThings()
 	}
 	int newPhoto = 0;
 	int photoVal = analogRead(A0);
-  photoVal -= 25;
+  photoVal -= 75;
   photoVal -= int(calibration);
  //Serial.println(photoVal);
 	if (photoVal > 0)
@@ -264,7 +236,7 @@ void doPhotocellThings()
 	if (newPhoto == photoOn)
 		return;
    digitalWrite(13,HIGH);
-	if (newPhoto == 1 && millis() - photoStateChangeTime > 100)
+	if (newPhoto == 1 && millis() - photoStateChangeTime > 25)
 	{
 		photoOn = 1;
 		int index = -1;
@@ -287,7 +259,7 @@ void doPhotocellThings()
     
 		photoStateChangeTime = millis();
 	}
-	else if (newPhoto == 0 && millis() - photoStateChangeTime > 100)
+	else if (newPhoto == 0 && millis() - photoStateChangeTime > 25)
 	{
 
 		photoOn = 0;
