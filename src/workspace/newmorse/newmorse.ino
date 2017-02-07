@@ -10,6 +10,10 @@ const byte COLOR_SEQUENCE[] = { COLOR_RED, COLOR_BLUE, COLOR_GREEN, COLOR_YELLOW
 const byte PIN_BUTTONS[] = { 5, 4, 3, 2 };
 const byte PIN_LEDS[] = { 11, 10, 9, 8 };
 
+const int THRESH_SPACE = 7;
+const int THRESH_NEWLETTER = 2;
+const int THRESH_DASH = 2.75;
+
 int calibrateCount = 0;
 float calibration = 0;
 
@@ -23,7 +27,7 @@ float unitLength = 0;
 
 long buttonChangeTimes[sizeof(PIN_BUTTONS)];
 int buttonStates[sizeof(PIN_BUTTONS)];
-unsigned char currMorse[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+unsigned char currMorse[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int currMorseIndex = 0;
 
 const unsigned char letters[] = {
@@ -101,7 +105,7 @@ void loop()
 {
     switchPressTester();
 
-    delay(25);
+    delay(5);
 }
 
 void printTimes(int state, int timeMillis)
@@ -153,7 +157,7 @@ void addToWhileOn(int intTime)
 {
     float now = intTime;
     float unit = now / unitLength;
-    if (unit < 1.25)
+    if (unit < THRESH_DASH)
         buttonPressed(COLOR_RED);
     else
         buttonPressed(COLOR_BLUE);
@@ -162,12 +166,12 @@ void addToWhileOff(int intTime)
 {
   float now = intTime;
   float unitt = now / unitLength;
-              if (unitt > 7)
+              if (unitt > THRESH_SPACE)
               {
                    currMorseIndex++;
                    currMorseIndex++;
                 }
-               else if (unitt > 2) {
+               else if (unitt > THRESH_NEWLETTER) {
                    currMorseIndex++;
                 }
 }
