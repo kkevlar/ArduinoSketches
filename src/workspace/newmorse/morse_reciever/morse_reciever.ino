@@ -27,7 +27,7 @@ float unitLength = 0;
 
 long buttonChangeTimes[sizeof(PIN_BUTTONS)];
 int buttonStates[sizeof(PIN_BUTTONS)];
-unsigned char currMorse[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+unsigned char currMorse[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 int currMorseIndex = 0;
 
 const unsigned char letters[] = {
@@ -88,7 +88,6 @@ void initialize()
     Serial.println(howLong);
   }
  */
-    randomSeed(analogRead(A0));
 }
 
 int lengthOfMorse(unsigned char letter)
@@ -129,28 +128,25 @@ void printTimes(int state, int timeMillis)
 
         dealtWith = true;
     }
-   
+
     if (state == 1)
-       addToWhileOn(timeMillis);
-    else
-    {
-       addToWhileOff(timeMillis);
+        addToWhileOn(timeMillis);
+    else {
+        addToWhileOff(timeMillis);
     }
-    for(int i = 0; i < sizeof(currMorse); i++)
-    {
-      if(currMorse[i] == 0)
-        Serial.print(" ");
+    for (int i = 0; i < sizeof(currMorse); i++) {
+        if (currMorse[i] == 0)
+            Serial.print(" ");
         else
-        Serial.print(matchToMorse(currMorse[i]));
+            Serial.print(matchToMorse(currMorse[i]));
     }
     Serial.println();
 }
 char matchToMorse(unsigned char morse)
 {
-  for (int i = 0; i < sizeof(letters); i++) 
-  {
+    for (int i = 0; i < sizeof(letters); i++) {
         if (morse == letters[i])
-            return  65 + i; 
+            return 65 + i;
     }
 }
 void addToWhileOn(int intTime)
@@ -158,32 +154,27 @@ void addToWhileOn(int intTime)
     float now = intTime;
     float unit = now / unitLength;
     if (unit < THRESH_DASH)
-        buttonPressed(COLOR_RED);
+        dot();
     else
-        buttonPressed(COLOR_BLUE);
+        dash();
 }
 void addToWhileOff(int intTime)
 {
-  float now = intTime;
-  float unitt = now / unitLength;
-              if (unitt > THRESH_SPACE)
-              {
-                   currMorseIndex++;
-                   currMorseIndex++;
-                }
-               else if (unitt > THRESH_NEWLETTER) {
-                   currMorseIndex++;
-                }
+    float now = intTime;
+    float unitt = now / unitLength;
+    if (unitt > THRESH_SPACE) {
+        currMorseIndex++;
+        currMorseIndex++;
+    }
+    else if (unitt > THRESH_NEWLETTER) {
+        currMorseIndex++;
+    }
 }
-void buttonPressed(byte color)
+void addDashOrDot(byte value)
 {
-
     int howLong = lengthOfMorse(currMorse[currMorseIndex]);
     howLong++;
     byte bitToChange = 7 - (howLong + 2);
-    byte value = 0;
-    if (color == COLOR_BLUE)
-        value = 1;
     currMorse[currMorseIndex] ^= (-value ^ currMorse[currMorseIndex]) & (1 << bitToChange);
     for (int i = 0; i < 3; i++) {
         byte exponent = 2 - i;
@@ -198,9 +189,22 @@ void buttonPressed(byte color)
     }
     for (int i = 0; i < 8; i++) {
         int bitt = (currMorse[currMorseIndex] >> (7 - i)) & 1;
-       // Serial.print(bitt);
     }
-   // Serial.println();
+}
+void dash()
+{
+    addDashOrDot(1);
+}
+void dot()
+{
+    addDashOrDot(0);
+}
+void buttonPressed(byte color)
+{
+    if (color == COLOR_BLUE)
+        dash();
+    else
+        dot();
 }
 void doPhotocellThings()
 {
