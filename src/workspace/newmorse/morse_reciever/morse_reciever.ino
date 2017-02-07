@@ -67,6 +67,7 @@ void setup()
         pinMode(PIN_LEDS[i], OUTPUT);
     pinMode(13, OUTPUT);
     pinMode(A0, INPUT);
+    digitalWrite(13, LOW);
     initialize();
 }
 
@@ -217,6 +218,7 @@ void doPhotocellThings()
         calibrateCount++;
         return;
     }
+    digitalWrite(13, HIGH);
     int newPhoto = 0;
     int photoVal = analogRead(A0);
     photoVal -= 75;
@@ -230,7 +232,6 @@ void doPhotocellThings()
     }
     if (newPhoto == photoOn)
         return;
-    digitalWrite(13, HIGH);
     if (newPhoto == 1 && millis() - photoStateChangeTime > 10) {
         photoOn = 1;
         int index = -1;
