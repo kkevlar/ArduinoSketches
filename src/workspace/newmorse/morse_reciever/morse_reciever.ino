@@ -27,7 +27,7 @@ float unitLength = 0;
 
 long buttonChangeTimes[sizeof(PIN_BUTTONS)];
 int buttonStates[sizeof(PIN_BUTTONS)];
-unsigned char currMorse[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+unsigned char currMorse[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int currMorseIndex = 0;
 
 const unsigned char letters[] = {
