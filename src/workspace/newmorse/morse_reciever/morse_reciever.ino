@@ -30,7 +30,7 @@ float unitLength = 0;
 long buttonChangeTimes[sizeof(PIN_BUTTONS)];
 int buttonStates[sizeof(PIN_BUTTONS)];
 
-unsigned char currMorse[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+unsigned char currMorse[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int currMorseIndex = 0;
 
 #include <LiquidCrystal.h>
@@ -146,28 +146,36 @@ void printTimes(int state, int timeMillis)
     }
   
    lcd.setCursor(0,0);
+   int offset = currMorseIndex - 32;
+   if(offset < 0)
+   offset = 0;
     for (int i = 0; i < sizeof(currMorse); i++)
     {
-     
+        
         if (currMorse[i] == 0)
         {
             Serial.print(" ");
-          lcd.print(" ");
+            if(i - offset >= 0)
+               lcd.print(" ");
+            
         }
         else
         {
-          if(i == 16)
+          if(i-offset == 16)
           lcd.setCursor(0,1);
             Serial.print(matchToMorse(currMorse[i]));
+            if(i - offset >= 0)
            lcd.print(matchToMorse(currMorse[i]));
         }
     }
+    /*
     lcd.setCursor(0,1);
     lcd.print(unitLength);
     lcd.print(",");
     lcd.print(highestPhoto);
     lcd.print(",");
     lcd.print(lowestPhoto);
+    */
     Serial.println();
 }
 char matchToMorse(unsigned char morse)
