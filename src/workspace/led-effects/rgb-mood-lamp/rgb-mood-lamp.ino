@@ -39,6 +39,35 @@ void setup()
     pinMode(A1, INPUT);
     pinMode(13, OUTPUT);
 }
+typedef unsigned char  morseBitmask_t; // see also MAX_TIMINGS
+const morseBitmask_t MORSE_LETTERS[26] = {
+  /* a */ B101,
+  /* b */ B11000,
+  /* c */ B11010,
+  /* d */ B1100,
+  /* e */ B10,
+  /* f */ B10010,
+  /* g */ B1110,
+  /* h */ B10000,
+  /* i */ B100,
+  /* j */ B10111,
+  /* k */ B1101,
+  /* l */ B10100,
+  /* m */ B111,
+  /* n */ B110,
+  /* o */ B1111,
+  /* p */ B10110,
+  /* q */ B11101,
+  /* r */ B1010,
+  /* s */ B1000,
+  /* t */ B11,
+  /* u */ B1001,
+  /* v */ B10001,
+  /* w */ B1011,
+  /* x */ B11001,
+  /* y */ B11011,
+  /* z */ B11100,
+};
 void loop()
 {
     boolean dont = false;

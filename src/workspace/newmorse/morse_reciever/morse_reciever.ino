@@ -16,10 +16,12 @@ const int THRESH_DASH = 2.75;
 
 int calibrateCount = 0;
 float calibration = 0;
+int lowestPhoto = 5000;
+int highestPhoto = 0;
 
 byte photoCellHitCount = 0;
-int upTimes[] = { 0, 0, 0, 0, 0 };
-int downTimes[] = { 0, 0, 0, 0, 0 };
+int upTimes[] = { 0, 0, 0, 0, 0 ,0,0,0};
+int downTimes[] = { 0, 0, 0, 0, 0,0,0,0};
 long photoStateChangeTime = 0;
 byte photoOn = 0;
 boolean dealtWith = false;
@@ -117,10 +119,11 @@ void loop()
 void printTimes(int state, int timeMillis)
 {
 
-    float shortestUp = upTimes[0];
-    for (int i = 0; i < sizeof(upTimes) / sizeof(int); i++) {
-
-        if (upTimes[i] < shortestUp)
+    float shortestUp = 50000;
+    for (int i = 0; i < sizeof(upTimes) / sizeof(int); i++) 
+    {
+  
+        if (upTimes[i] < shortestUp && upTimes[i] > 25)
             shortestUp = upTimes[i];
     }
 
@@ -159,6 +162,12 @@ void printTimes(int state, int timeMillis)
            lcd.print(matchToMorse(currMorse[i]));
         }
     }
+    lcd.setCursor(0,1);
+    lcd.print(unitLength);
+    lcd.print(",");
+    lcd.print(highestPhoto);
+    lcd.print(",");
+    lcd.print(lowestPhoto);
     Serial.println();
 }
 char matchToMorse(unsigned char morse)
@@ -227,28 +236,41 @@ void buttonPressed(byte color)
 }
 void doPhotocellThings()
 {
-    if (millis() < 1000) {
-        if (calibrateCount == 0 || true)
-            calibration = analogRead(A1);
-        else
-            calibration *= (calibrateCount / (calibrateCount + 1));
-        calibration += analogRead(A1) / (calibrateCount + 1);
-        calibrateCount++;
+    if (millis() < 3000) 
+    {
+        int calibVal = analogRead(A1);
+        if(calibVal < lowestPhoto && calibVal > 25)
+        lowestPhoto = calibVal;
+        if(calibVal > highestPhoto)
+        highestPhoto = calibVal;
         return;
     }
-    digitalWrite(13, HIGH);
+     int newPhoto = 0;
+    int photoVal = analogRead(A1);
+    /*
+    lcd.setCursor(0,0);
+    lcd.print(lowestPhoto);
+    lcd.print(",");
+  
+    lcd.print(highestPhoto);
+      lcd.setCursor(0,1);
+      digitalWrite(13, HIGH);
     int newPhoto = 0;
     int photoVal = analogRead(A1);
-    photoVal -= 75;
-    photoVal -= int(calibration);
+    lcd.print(photoVal);
+    return;
+    */
+    
  // Serial.println(photoVal);
    // lcd.clear();
    // lcd.print(photoVal);
-    if (photoVal > 0) {
+    if (photoVal > (lowestPhoto+highestPhoto)/2) 
+    {
         newPhoto = 1;
     }
-    else {
-        newPhoto = 0;
+    else if(photoVal < lowestPhoto+25 || true)
+    {
+      newPhoto = 0;
     }
     if (newPhoto == photoOn)
         return;
