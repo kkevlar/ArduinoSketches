@@ -31,6 +31,9 @@ int buttonStates[sizeof(PIN_BUTTONS)];
 unsigned char currMorse[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 int currMorseIndex = 0;
 
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(7,8,9,10,11,12);
+
 const unsigned char letters[] = {
     /*A*/ B01001000,
     /*B*/ B10010000,
@@ -62,12 +65,14 @@ const unsigned char letters[] = {
 void setup()
 {
     Serial.begin(9600);
+    /*
     for (int i = 0; i < sizeof(PIN_BUTTONS); i++)
         pinMode(PIN_BUTTONS[i], INPUT);
     for (int i = 0; i < sizeof(PIN_LEDS); i++)
         pinMode(PIN_LEDS[i], OUTPUT);
+        */
     pinMode(13, OUTPUT);
-    pinMode(A0, INPUT);
+    pinMode(A1, INPUT);
     digitalWrite(13, LOW);
     initialize();
 }
@@ -76,6 +81,8 @@ void initialize()
 {
     delay(100);
     digitalWrite(13, LOW);
+    lcd.begin(16, 2);
+    lcd.clear();
     /*
   for(int x = 0; x < sizeof(letters); x++)
   {
@@ -105,8 +112,6 @@ int lengthOfMorse(unsigned char letter)
 void loop()
 {
     switchPressTester();
-
-    delay(5);
 }
 
 void printTimes(int state, int timeMillis)
@@ -136,11 +141,23 @@ void printTimes(int state, int timeMillis)
     else {
         addToWhileOff(timeMillis);
     }
-    for (int i = 0; i < sizeof(currMorse); i++) {
+  
+   lcd.setCursor(0,0);
+    for (int i = 0; i < sizeof(currMorse); i++)
+    {
+     
         if (currMorse[i] == 0)
+        {
             Serial.print(" ");
+          lcd.print(" ");
+        }
         else
+        {
+          if(i == 16)
+          lcd.setCursor(0,1);
             Serial.print(matchToMorse(currMorse[i]));
+           lcd.print(matchToMorse(currMorse[i]));
+        }
     }
     Serial.println();
 }
@@ -212,19 +229,21 @@ void doPhotocellThings()
 {
     if (millis() < 1000) {
         if (calibrateCount == 0 || true)
-            calibration = analogRead(A0);
+            calibration = analogRead(A1);
         else
             calibration *= (calibrateCount / (calibrateCount + 1));
-        calibration += analogRead(A0) / (calibrateCount + 1);
+        calibration += analogRead(A1) / (calibrateCount + 1);
         calibrateCount++;
         return;
     }
     digitalWrite(13, HIGH);
     int newPhoto = 0;
-    int photoVal = analogRead(A0);
+    int photoVal = analogRead(A1);
     photoVal -= 75;
     photoVal -= int(calibration);
-    //Serial.println(photoVal);
+ // Serial.println(photoVal);
+   // lcd.clear();
+   // lcd.print(photoVal);
     if (photoVal > 0) {
         newPhoto = 1;
     }
