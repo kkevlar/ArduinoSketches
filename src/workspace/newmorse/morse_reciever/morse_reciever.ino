@@ -164,8 +164,8 @@ void printTimes(int state, int timeMillis)
             Serial.print(matchToMorse(currMorse[i]));
             if(i - offset >= 0)
               lcd.print(matchToMorse(currMorse[i]));
-              if(i-offset == 15)
-              lcd.setCursor(0,1);
+            //  if(i-offset == 15)
+            //  lcd.setCursor(0,1);
         }
     }
     /*
