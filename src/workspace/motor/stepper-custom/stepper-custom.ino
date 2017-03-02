@@ -13,10 +13,10 @@ Stepper stepper(STEPS, 4, 5, 6, 7); // Create a stepper object on pins 4, 5, 6 a
 void setup() {
 }
 void loop() {
- stepper.setSpeed(70); // Set the stepper speed to 60 RPM.
- stepper.step(512*3); // Have the motor turn through 512 steps (one revolution).
- delay(1000); // Delay for .1 seconds.
- stepper.setSpeed(30); // Set the stepper speed to 20 RPM.
- stepper.step(.75*512); // Have the motor turn the reverse direction for 1/4 of a revolution.
- delay(2000); // Delay for .1 seconds.
+ stepper.setSpeed(60); // Set the stepper speed to 60 RPM.
+ stepper.step(STEPS*3); // Have the motor turn through 512 steps (one revolution).
+  delay(1000);
+  stepper.setSpeed(30);
+  stepper.step(STEPS * -.75);
+  delay(2000);
 }
