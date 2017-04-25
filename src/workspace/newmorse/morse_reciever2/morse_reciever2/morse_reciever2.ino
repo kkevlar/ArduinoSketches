@@ -3,8 +3,17 @@ unsigned char currMorse[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 int currMorseIndex = 0;
 
 int ambientLight = 0;
+long startTime = 0;
+byte state = 0;
 
-const LIGHT_PIN = A1;
+const int LIGHT_CHANGE_THRESHOLD = 30;
+
+const int TIME_UNIT = 30;
+const int TIME_DASH 
+const int TIME_SPACE
+const int TIME_NEWLETTER
+
+const int LIGHT_PIN = A1;
 
 
 #include <LiquidCrystal.h>
@@ -129,7 +138,7 @@ void printTimes(int state, int timeMillis)
 }
 */
 
-char matchToMorse(unsigned char morse)
+char morseCharToLetter(unsigned char morse)
 {
     for (int i = 0; i < sizeof(letters); i++) {
         if (morse == letters[i])
@@ -189,10 +198,31 @@ void dot()
 
 void doPhotocellThings()
 {
+    long lightDelta = analogRead(LIGHT_PIN) - ambientLight;
+    long timeDelta = millis() - startTime;
     if (millis() > 500 && ambientLight == 0)
     {
       ambientLight = analogRead(LIGHT_PIN);
     }
+    else
+    {
+      if(lightDelta > LIGHT_CHANGE_THRESHOLD && state != 2)
+      {
+        if(state == 1)
+        {
+          addToWhileOff(timeDelta);
+        }
+        state = 2;
+        startTime = millis();
+      }
+      else if( !(delta > LIGHT_CHANGE_THRESHOLD) && state == light) 
+      {
+        state = 1;
+        startTime = millis();
+        addToWhileOn(timeDelta);
+      }
+    }
+    
 }
 
 
