@@ -2,6 +2,11 @@
 unsigned char currMorse[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int currMorseIndex = 0;
 
+int ambientLight = 0;
+
+const LIGHT_PIN = A1;
+
+
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(7,8,9,10,11,12);
 
@@ -184,7 +189,10 @@ void dot()
 
 void doPhotocellThings()
 {
-    
+    if (millis() > 500 && ambientLight == 0)
+    {
+      ambientLight = analogRead(LIGHT_PIN);
+    }
 }
 
 
