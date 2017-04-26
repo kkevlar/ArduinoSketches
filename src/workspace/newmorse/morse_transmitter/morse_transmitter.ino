@@ -32,7 +32,7 @@ const unsigned char letters[] = {
 };
 unsigned char morseAtIndex(int index)
 {
-  transmission = transmission.toUpperCase();
+transmission.toUpperCase();
   
   char currChar = transmission.charAt(index);
   if(currChar == ' ')
@@ -51,13 +51,13 @@ int lengthOfMorse(unsigned char letter)
     {
         int bitt = (letter >> (7 - y)) & 1;
         int exponent = 2 - y;
-        howLong += (round(pow(2, exponent)) * bit);
+        howLong += (round(pow(2, exponent)) * bitt);
     }
     return howLong;
 }
 void loop() 
 {
-  for(int currLetterIndex = 0; currLetterIndex < transmision.length(); currLetterIndex++)
+  for(int currLetterIndex = 0; currLetterIndex < transmission.length(); currLetterIndex++)
   {
     unsigned char currMorse = morseAtIndex(currLetterIndex);
     if(currMorse == 0)
