@@ -7,14 +7,14 @@
 Servo servo1; // Create a servo object named servo1.
 void setup()
 {
-    servo1.attach(5); //Servo1 on pin5
+    servo1.attach(A5); //Servo1 on pin5
 }
 void loop()
 {
-    servo1.write(0);  //Servos to central position
+    //servo1.write(0);  //Servos to central position
     delay(3000);       //Delay 3sec
     
-    servo1.write(180); //Lservo all right
+    servo1.write(150); //Lservo all right
    
     delay(1000);       //Delay 1sec
   

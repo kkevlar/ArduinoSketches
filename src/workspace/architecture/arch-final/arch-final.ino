@@ -24,6 +24,8 @@ const byte dim_curve[] = {
 };
 
 int hue = 0;
+#include <Servo.h> // Loads the Arduino Servo Library.
+Servo servo1; // Create a servo object named servo1.
 
 void setup()
 {
@@ -34,18 +36,20 @@ void setup()
   pinMode(A1, INPUT);
   pinMode(13, OUTPUT);
   pinMode(12,OUTPUT);
-  Serial.begin(9600);
-
-  tone(12,NOTE_DS5,750);
-  delay(750);
-  tone(12,NOTE_B4,750);
+ // pinMode(5,OUTPUT);
+  servo1.attach(A5); //Servo1 on pin5
+ // Serial.begin(9600);
+ 
+ servo1.write(150);
+ //digitalWrite(A5,LOW);
+ dingDong();
 }
 
 void loop()
 {
   boolean dont = false;
 
-  
+   
 
     doPhotocellThings();
 
@@ -68,6 +72,13 @@ void loop()
 void doPhotocellThings()
 {
   
+}
+void dingDong()
+{
+   tone(12,NOTE_DS5,750);
+  delay(750);
+  tone(12,NOTE_B4,750);
+  delay(750);
 }
 
 
