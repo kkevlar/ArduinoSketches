@@ -100,7 +100,7 @@ void loop()
     { 
       count++;
       if(count < 21)
-      changeTime  += 250;
+      changeTime  += 200;
       else
       changeTime  += 600;
     }
