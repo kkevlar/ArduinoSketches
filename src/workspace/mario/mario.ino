@@ -21,68 +21,40 @@ const byte dim_curve[] = {
 };
 
 int melody[] = {
-  NOTE_A4,
-  NOTE_A4,
-  NOTE_C4,
-  NOTE_E4,
-  NOTE_F4,
-  NOTE_C4,
-  NOTE_E4,
-  NOTE_F4,
-  NOTE_C4,
-  NOTE_E4,
-  NOTE_F4,
-  NOTE_C4,
-  NOTE_E4,
-  NOTE_A4,
-  NOTE_A4,
-  0,
-  NOTE_A4,
-  NOTE_A4,
-  0,
-  NOTE_A4,
-  NOTE_A4,
-  0,
-  NOTE_A5,
-  NOTE_E6,
-  NOTE_D6,
-  NOTE_E6,
-  NOTE_G6,
-  NOTE_E6,
-  NOTE_E6,
-  NOTE_E6
+ 
+
+  
+  NOTE_E7, NOTE_E7, 0, NOTE_E7,
+  0, NOTE_C7, NOTE_E7, 0,
+  NOTE_G7, 0, 0,  0,
+  NOTE_G6, 0, 0, 0,
+ 
+  NOTE_C7, 0, 0, NOTE_G6,
+  0, 0, NOTE_E6, 0,
+  0, NOTE_A6, 0, NOTE_B6,
+  0, NOTE_AS6, NOTE_A6, 0,
+ 
+  NOTE_G6, NOTE_E7, NOTE_G7,
+  NOTE_A7, 0, NOTE_F7, NOTE_G7,
+  0, NOTE_E7, 0, NOTE_C7,
+  NOTE_D7, NOTE_B6, 0, 0,
+ 
+  NOTE_C7, 0, 0, NOTE_G6,
+  0, 0, NOTE_E6, 0,
+  0, NOTE_A6, 0, NOTE_B6,
+  0, NOTE_AS6, NOTE_A6, 0,
+ 
+  NOTE_G6, NOTE_E7, NOTE_G7,
+  NOTE_A7, 0, NOTE_F7, NOTE_G7,
+  0, NOTE_E7, 0, NOTE_C7,
+  NOTE_D7, NOTE_B6, 0, 0,
 };
 
 void setup() 
 {
   pinMode(3,OUTPUT);
   pinMode(9,OUTPUT);
-  /*
-  for (int thisNote = 0; thisNote < sizeof(melody)/2; thisNote++) 
-  {
-
-    // to calculate the note duration, take one second
-    // divided by the note type.
-    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    int noteDuration = 250;
-    tone(3, melody[thisNote]);
-    if(melody[thisNote]!=0)
-      digitalWrite(9,HIGH);
-    // to distinguish the notes, set a minimum time between them.
-    // the note's duration + 30% seems to work well:
-    if(thisNote < 21)
-      delay(250);
-    else
-      delay(600);
-    // stop the tone playing:
-    digitalWrite(9,LOW);
-    if(sizeof(melody)/2 > thisNote+1 && melody[thisNote] != melody[thisNote+1])
-      noTone(3);
-    delay(20);
-  }
-  delay(500);
-  noTone(3);
-  */
+ 
 }
 int count = 0;
 long changeTime = 0;
@@ -99,10 +71,7 @@ void loop()
     do
     { 
       count++;
-      if(count < 21)
-      changeTime  += 200;
-      else
-      changeTime  += 600;
+      changeTime += 200;
     }
     while(count < sizeof(melody)/2 && melody[count] == note);
   
