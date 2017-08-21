@@ -38,23 +38,22 @@ void setup() {
   pinMode(9,OUTPUT);
   // initialize serial communications at 9600 bps:
   Serial.begin(9600);
-  delay(500);
+  delay(200);
   cumquat = analogRead(analogInPin);
 }
 
-void loop() {
+void loop() 
+{
+  /*
   // read the analog in value:
   for(int i = 0 ; i < 100; i++)
   {
   sensorValue = max(analogRead(analogInPin),sensorValue);
  // delay();
   }
-  
-  // map it to the range of the analog out:
-  int num = abs(sensorValue-cumquat);
-  int highest = max(highest,num);
-  Serial.println(num);
-  sensorValue = 0;
-  int mapp = map(num,0,highest,0,255);
+  */
+  sensorValue = analogRead(analogInPin);
+  Serial.println(sensorValue - cumquat);
+  int mapp = map(sensorValue - cumquat,0,400,0,255);
   analogWrite(9,mapp);
 }
