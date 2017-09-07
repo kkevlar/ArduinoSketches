@@ -11,7 +11,7 @@
 	#include <windows.h>
 
 #else     
-	#error Platform not supported
+	#warning "Platform not supported"
 #endif
 
 long cpMillis()
@@ -33,7 +33,7 @@ long cpMillis()
 		return (time.wSecond * 1000) + time.wMilliseconds;
 
 	#else     
-		#error Platform not supported
+  #warning "Platform not supported"
 	#endif	
 }
 
@@ -46,7 +46,7 @@ void cpSleep(int sleepMs)
     Sleep(sleepMs);
 
 #else     
-#error Platform not supported
+  #warning "Platform not supported"
 #endif
 }
 

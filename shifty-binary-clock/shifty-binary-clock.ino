@@ -63,7 +63,8 @@ void rsPins()
 
 int getCurrSecs()
 {
-	return (((millis()+offset)%(60*60*1000*24))/1000 % 60);
+  
+	return (((millis()+offset))/1000 % 60);
 }
 
 void writeReg(bool writeVal)
@@ -71,9 +72,9 @@ void writeReg(bool writeVal)
 	#if (ARDUINOZ)
 		digitalWrite(PIN_CLOCK, LOW);
 		digitalWrite(PIN_DATA, writeVal);
-		delayMicros(5);
+		delayMicroseconds(5);
 		digitalWrite(PIN_CLOCK, HIGH);
-		delayMicros(5);
+		delayMicroseconds(5);
 		digitalWrite(PIN_DATA, LOW);
 		digitalWrite(PIN_CLOCK,LOW);
 	#endif
