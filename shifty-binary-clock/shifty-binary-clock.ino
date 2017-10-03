@@ -13,17 +13,17 @@
 	#include <stdint.h>
 #endif
 
-#define PIN_DATA 2
-#define PIN_CLOCK 3
-#define PIN_LATCH 4
+#define PIN_DATA 7
+#define PIN_CLOCK 5
+#define PIN_LATCH 3
 
 #if (OE_IS_CONTROLLED)
 	#define PIN_OE 5
 #endif
 
 long offset = 0;
-uint8_t secs = 0;
-uint8_t minutes = 0;
+uint8_t secs = 10;
+uint8_t minutes = 31;
 uint8_t hours = 0;
 
 void rsPins()
@@ -103,14 +103,14 @@ void loop()
 		rsPins();
 
 		secs = (uint8_t) currSecs;
-
 		for(int i = 0; i < 6; i++)
 			writeReg((secs >> i) & 0x01);
 		for(int i = 0; i < 6; i++)
 			writeReg((minutes >> i) & 0x01);
-		for(int i = 0; i < 5; i++)
+		for(int i = 0; i < 4; i++)
 			writeReg((hours >> i) & 0x01);
-
+      //for(int i = 0; i < 1; i++)
+     // writeReg(0);
 		#if (ARDUINOZ)
 			digitalWrite(PIN_LATCH, HIGH);
 			delay(10);
