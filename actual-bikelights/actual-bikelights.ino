@@ -42,7 +42,13 @@ void setup()
 
 int getHueFromMillis()
 {
-    return (millis()-offset/10)%360
+    if(state == 0 && buttonState == LOW)
+    {
+        offset = bStateChangeMillis;
+        return (offset + ((millis()-offset)/30)) % 360;
+    }
+    else
+        return (millis()/10)%360
 }
 
 void setLedsByHSV(int hue, int sat, int val)
@@ -81,14 +87,10 @@ void loop()
     */
 
     if(state == 0)
-        setLedsByHue(getHueFromMillis());
-    if (state != 1)
-        frozenHue = -1;
-    else
-        if (frozenHue == -1)
-            frozenHue == getHueFromMillis();
-        else        
-            setLedsByHue(frozenHue);
+        frozenHue = getHueFromMillis();
+        setLedsByHue(frozenHue);
+    if (state == 1)   
+        setLedsByHue(frozenHue);
     if (state == 2)
         if ((millis() / 200) % 2 == 0)
             setLedsByHSV(frozenHue, 255, 255);
