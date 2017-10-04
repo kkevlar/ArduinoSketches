@@ -38,30 +38,17 @@ void setup()
     pinMode(PIN_BUTTON, INPUT_PULLUP);
 
     allows = true;
-    Serial.begin(9600);
 }
 
 int getHueFromMillis()
 {
-    if(state == 0 && buttonState == LOW)
-    {
-        offset = bStateChangeMillis;
-        return (offset + ((millis()-offset)/100)) % 360;
-    }
-    else
+
         return (millis()/50)%360;
 }
 
 void setLedsByHSV(int hue, int sat, int val)
 {
-    if (val == 0)
-    {
-      digitalWrite(PIN_RED,0);
-      digitalWrite(PIN_GRN,0);
-      digitalWrite(PIN_BLU,0);
-      }
-      else
-      {
+    
    getRGB(hue, sat, val, colors);
    int red = dim_curve[(colors[0])];
    int green = dim_curve[(colors[1])];
@@ -69,7 +56,7 @@ void setLedsByHSV(int hue, int sat, int val)
    analogWrite(PIN_RED, red);
    analogWrite(PIN_GRN, green);
    analogWrite(PIN_BLU, blue); 
-      }
+      
 }
 
 void setLedsByHue(int hue)
@@ -77,6 +64,15 @@ void setLedsByHue(int hue)
     setLedsByHSV(hue, 255, 255);
 }
 
+void allOff()
+{
+  setLedsByHSV(0, 0, 0);
+}
+
+void allOn()
+{
+  setLedsByHSV(0, 0, 255);
+}
 void loop()
 {
     /*
@@ -95,10 +91,13 @@ void loop()
         delay(5);
     }
     */
-
+    
     if(state == 0)
+    {
         frozenHue = getHueFromMillis();
         setLedsByHue(frozenHue);
+    }
+    
     if (state == 1)   
         setLedsByHue(frozenHue);
     if (state == 2)
@@ -114,8 +113,8 @@ void loop()
         else
             setLedsByHSV(frozenHue, 0, 0);
     if (state == 5)
-        setLedsByHSV(0,0,0);
-
+        allOff();
+  
     int nState = digitalRead(PIN_BUTTON);
     if (nState != buttonState)
     {
@@ -134,6 +133,13 @@ void loop()
     {
          allows = true;
     }
+    
+    /*
+    if(millis()/1000%2 ==0)
+    setLedsByHSV(0,0,0);
+    else
+    setLedsByHSV(0,0,255);
+    */
 
 }
 
