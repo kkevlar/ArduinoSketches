@@ -1,7 +1,14 @@
 #define PIN_RED 5
 #define PIN_GRN 6
 #define PIN_BLU 9
+
+#define MAX_RED 190
+#define MAX_GRN 230
+#define MAX_BLU 255
+
 #define PIN_BUTTON 3
+
+#define BLINK_SPEED 500
 
 const byte dim_curve[] = {
     0, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
@@ -22,7 +29,7 @@ const byte dim_curve[] = {
     193, 196, 200, 203, 207, 211, 214, 218, 222, 226, 230, 234, 238, 242, 248, 255,
 };
 
-int state = 5;
+int state = 0;
 long offset = 0;
 int frozenHue = -1;
 int colors[3];
@@ -53,9 +60,9 @@ void setLedsByHSV(int hue, int sat, int val)
    int red = dim_curve[(colors[0])];
    int green = dim_curve[(colors[1])];
    int blue = dim_curve[(colors[2])];
-   analogWrite(PIN_RED, red);
-   analogWrite(PIN_GRN, green);
-   analogWrite(PIN_BLU, blue); 
+   analogWrite(PIN_RED, map(red,0,255,0,MAX_RED));
+   analogWrite(PIN_GRN, map(green,0,255,0,MAX_GRN));
+   analogWrite(PIN_BLU, map(blue,0,255,0,MAX_BLU)); 
       
 }
 
@@ -101,14 +108,14 @@ void loop()
     if (state == 1)   
         setLedsByHue(frozenHue);
     if (state == 2)
-        if ((millis() / 200) % 2 == 0)
+        if ((millis() / BLINK_SPEED) % 2 == 0)
             setLedsByHSV(frozenHue, 255, 255);
         else
             setLedsByHSV(frozenHue, 255, 0);
     if (state == 3)
         setLedsByHSV(0,0,255);
     if (state == 4)
-        if ((millis() / 200) % 2 == 0)
+        if ((millis() / BLINK_SPEED) % 2 == 0)
             setLedsByHSV(frozenHue, 0, 255);
         else
             setLedsByHSV(frozenHue, 0, 0);
